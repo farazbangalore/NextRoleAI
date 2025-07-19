@@ -1,0 +1,329 @@
+<nav class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo -->
+      <div class="flex items-center">
+        <a routerLink="isAuthenticated ? '/dashboard' : '/'" class="flex items-center">
+          <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-sm">NR</span>
+          </div>
+          <span class="ml-2 text-xl font-bold text-slate-800">NextRole.ai</span>
+        </a>
+      </div>
+
+      <!-- Desktop Navigation Links -->
+      <div class="hidden md:flex items-center space-x-8">
+        <ng-container *ngIf="isAuthenticated; else publicNav">
+          <!-- Authenticated Navigation -->
+          <a 
+            routerLink="/dashboard" 
+            routerLinkActive="nav-active"
+            class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">
+            Dashboard
+          </a>
+          <a 
+            routerLink="/applications" 
+            routerLinkActive="nav-active"
+            class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">
+            Applications
+          </a>
+          <a 
+            routerLink="/resume-builder" 
+            routerLinkActive="nav-active"
+            class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">
+            Resume Builder
+          </a>
+          <a 
+            routerLink="/analytics" 
+            routerLinkActive="nav-active"
+            class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">
+            Analytics
+          </a>
+          <a 
+            routerLink="/jobs" 
+            routerLinkActive="nav-active"
+            class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">
+            Job Discovery
+          </a>
+        </ng-container>
+
+        <ng-template #publicNav>
+          <!-- Public Navigation -->
+          <a 
+            href="#features" 
+            class="text-slate-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">
+            Features
+          </a>
+          <a 
+            href="#pricing" 
+            class="text-slate-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">
+            Pricing
+          </a>
+          <a 
+            href="#about" 
+            class="text-slate-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">
+            About
+          </a>
+        </ng-template>
+      </div>
+
+      <!-- Right Side Actions -->
+      <div class="flex items-center space-x-4">
+        <ng-container *ngIf="isAuthenticated; else authButtons">
+          <!-- Authenticated User Actions -->
+          <div class="hidden md:flex items-center space-x-3">
+            <!-- Notifications -->
+            <button 
+              (click)="toggleNotifications()"
+              class="p-2 text-slate-600 hover:text-blue-600 transition-colors relative">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span *ngIf="notificationCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {{ notificationCount }}
+              </span>
+            </button>
+
+            <!-- Help -->
+            <button 
+              (click)="openHelp()"
+              class="p-2 text-slate-600 hover:text-blue-600 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </button>
+          </div>
+
+          <!-- User Menu -->
+          <div class="relative" #userMenuRef>
+            <button 
+              (click)="toggleUserMenu()"
+              class="flex items-center space-x-2 p-2 rounded-lg hover:bg-slate-100 transition-colors">
+              <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                <span class="text-white font-medium text-sm">{{ userInitials }}</span>
+              </div>
+              <span class="hidden md:block text-sm font-medium text-slate-700">{{ userName }}</span>
+              <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+
+            <!-- User Dropdown Menu -->
+            <div 
+              *ngIf="isUserMenuOpen" 
+              class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-slate-200 py-2 z-50">
+              
+              <!-- User Info -->
+              <div class="px-4 py-3 border-b border-slate-200">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                    <span class="text-white font-medium">{{ userInitials }}</span>
+                  </div>
+                  <div>
+                    <p class="text-sm font-medium text-slate-900">{{ userName }}</p>
+                    <p class="text-xs text-slate-500">{{ userEmail }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Menu Items -->
+              <div class="py-1">
+                <a 
+                  routerLink="/profile" 
+                  (click)="closeUserMenu()"
+                  class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors">
+                  <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                  </svg>
+                  Profile Settings
+                </a>
+                
+                <a 
+                  routerLink="/settings" 
+                  (click)="closeUserMenu()"
+                  class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors">
+                  <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                  Account Settings
+                </a>
+
+                <a 
+                  routerLink="/billing" 
+                  (click)="closeUserMenu()"
+                  class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors">
+                  <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                  </svg>
+                  Billing & Plans
+                </a>
+
+                <div class="border-t border-slate-200 my-1"></div>
+
+                <a 
+                  href="#" 
+                  (click)="openHelp(); closeUserMenu()"
+                  class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors">
+                  <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  Help & Support
+                </a>
+
+                <button 
+                  (click)="logout()"
+                  class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                  <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                  </svg>
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #authButtons>
+          <!-- Authentication Buttons -->
+          <button 
+            routerLink="/login"
+            class="text-slate-600 hover:text-blue-600 px-4 py-2 text-sm font-medium transition-colors">
+            Sign In
+          </button>
+          <button 
+            routerLink="/signup"
+            class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105">
+            Get Started
+          </button>
+        </ng-template>
+
+        <!-- Mobile Menu Button -->
+        <button 
+          (click)="toggleMobileMenu()"
+          class="md:hidden p-2 text-slate-600 hover:text-blue-600 transition-colors">
+          <svg *ngIf="!isMobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+          <svg *ngIf="isMobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div *ngIf="isMobileMenuOpen" class="md:hidden border-t border-slate-200 bg-white">
+      <div class="px-2 pt-2 pb-3 space-y-1">
+        <ng-container *ngIf="isAuthenticated; else mobilePublicNav">
+          <!-- Mobile Authenticated Navigation -->
+          <a 
+            routerLink="/dashboard" 
+            routerLinkActive="mobile-nav-active"
+            (click)="closeMobileMenu()"
+            class="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100 rounded-md transition-colors">
+            Dashboard
+          </a>
+          <a 
+            routerLink="/applications" 
+            routerLinkActive="mobile-nav-active"
+            (click)="closeMobileMenu()"
+            class="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100 rounded-md transition-colors">
+            Applications
+          </a>
+          <a 
+            routerLink="/resume-builder" 
+            routerLinkActive="mobile-nav-active"
+            (click)="closeMobileMenu()"
+            class="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100 rounded-md transition-colors">
+            Resume Builder
+          </a>
+          <a 
+            routerLink="/analytics" 
+            routerLinkActive="mobile-nav-active"
+            (click)="closeMobileMenu()"
+            class="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100 rounded-md transition-colors">
+            Analytics
+          </a>
+          <a 
+            routerLink="/jobs" 
+            routerLinkActive="mobile-nav-active"
+            (click)="closeMobileMenu()"
+            class="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100 rounded-md transition-colors">
+            Job Discovery
+          </a>
+          
+          <!-- Mobile User Actions -->
+          <div class="border-t border-slate-200 mt-4 pt-4">
+            <div class="flex items-center px-3 py-2 mb-3">
+              <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                <span class="text-white font-medium text-sm">{{ userInitials }}</span>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm font-medium text-slate-900">{{ userName }}</p>
+                <p class="text-xs text-slate-500">{{ userEmail }}</p>
+              </div>
+            </div>
+            
+            <a 
+              routerLink="/profile" 
+              (click)="closeMobileMenu()"
+              class="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100 rounded-md transition-colors">
+              Profile Settings
+            </a>
+            <a 
+              routerLink="/settings" 
+              (click)="closeMobileMenu()"
+              class="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100 rounded-md transition-colors">
+              Account Settings
+            </a>
+            <button 
+              (click)="logout()"
+              class="block w-full text-left px-3 py-2 text-base font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors">
+              Sign Out
+            </button>
+          </div>
+        </ng-container>
+
+        <ng-template #mobilePublicNav>
+          <!-- Mobile Public Navigation -->
+          <a 
+            href="#features" 
+            (click)="closeMobileMenu()"
+            class="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100 rounded-md transition-colors">
+            Features
+          </a>
+          <a 
+            href="#pricing" 
+            (click)="closeMobileMenu()"
+            class="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100 rounded-md transition-colors">
+            Pricing
+          </a>
+          <a 
+            href="#about" 
+            (click)="closeMobileMenu()"
+            class="block px-3 py-2 text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100 rounded-md transition-colors">
+            About
+          </a>
+          
+          <!-- Mobile Auth Buttons -->
+          <div class="border-t border-slate-200 mt-4 pt-4 space-y-2">
+            <button 
+              routerLink="/login"
+              (click)="closeMobileMenu()"
+              class="block w-full px-3 py-2 text-center text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100 rounded-md transition-colors">
+              Sign In
+            </button>
+            <button 
+              routerLink="/signup"
+              (click)="closeMobileMenu()"
+              class="block w-full px-3 py-2 text-center text-base font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-md transition-all">
+              Get Started
+            </button>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</nav>

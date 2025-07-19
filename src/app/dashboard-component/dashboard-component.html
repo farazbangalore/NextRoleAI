@@ -1,0 +1,244 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Welcome Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-slate-900 mb-2">
+        Welcome back, {{ userName }}! 👋
+      </h1>
+      <p class="text-slate-600">Here's what's happening with your job search today.</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Active Applications -->
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-slate-600">Active Applications</p>
+            <p class="text-3xl font-bold text-slate-900">{{ stats.activeApplications }}</p>
+          </div>
+          <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="mt-4 flex items-center">
+          <span class="text-green-600 text-sm font-medium">+12%</span>
+          <span class="text-slate-600 text-sm ml-2">from last week</span>
+        </div>
+      </div>
+
+      <!-- Interviews Scheduled -->
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-slate-600">Interviews Scheduled</p>
+            <p class="text-3xl font-bold text-slate-900">{{ stats.interviews }}</p>
+          </div>
+          <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4h.5a1 1 0 01.8 1.6L12 14l-5.3-5.4A1 1 0 017.5 7H8z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="mt-4 flex items-center">
+          <span class="text-green-600 text-sm font-medium">+3</span>
+          <span class="text-slate-600 text-sm ml-2">this week</span>
+        </div>
+      </div>
+
+      <!-- Average ATS Score -->
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-slate-600">Average ATS Score</p>
+            <p class="text-3xl font-bold text-slate-900">{{ stats.atsScore }}%</p>
+          </div>
+          <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="mt-4 flex items-center">
+          <span class="text-green-600 text-sm font-medium">+8%</span>
+          <span class="text-slate-600 text-sm ml-2">improvement</span>
+        </div>
+      </div>
+
+      <!-- Response Rate -->
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-slate-600">Response Rate</p>
+            <p class="text-3xl font-bold text-slate-900">{{ stats.responseRate }}%</p>
+          </div>
+          <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="mt-4 flex items-center">
+          <span class="text-green-600 text-sm font-medium">+15%</span>
+          <span class="text-slate-600 text-sm ml-2">from last month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Application Pipeline -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-slate-900">Application Pipeline</h2>
+            <button class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all">
+              Add New Application
+            </button>
+          </div>
+
+          <!-- Kanban Board -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Applied Column -->
+            <div class="bg-slate-50 rounded-lg p-4">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-medium text-slate-900">Applied</h3>
+                <span class="bg-slate-200 text-slate-700 text-xs px-2 py-1 rounded-full">{{ applications.applied.length }}</span>
+              </div>
+              <div class="space-y-3">
+                <div *ngFor="let app of applications.applied" class="bg-white rounded-lg p-4 shadow-sm border border-slate-200 cursor-pointer hover:shadow-md transition-shadow">
+                  <h4 class="font-medium text-slate-900 mb-1">{{ app.position }}</h4>
+                  <p class="text-sm text-slate-600 mb-2">{{ app.company }}</p>
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-500">{{ app.appliedDate }}</span>
+                    <div class="w-2 h-2 bg-slate-400 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- In Review Column -->
+            <div class="bg-blue-50 rounded-lg p-4">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-medium text-slate-900">In Review</h3>
+                <span class="bg-blue-200 text-blue-700 text-xs px-2 py-1 rounded-full">{{ applications.inReview.length }}</span>
+              </div>
+              <div class="space-y-3">
+                <div *ngFor="let app of applications.inReview" class="bg-white rounded-lg p-4 shadow-sm border border-blue-200 cursor-pointer hover:shadow-md transition-shadow">
+                  <h4 class="font-medium text-slate-900 mb-1">{{ app.position }}</h4>
+                  <p class="text-sm text-slate-600 mb-2">{{ app.company }}</p>
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-500">{{ app.appliedDate }}</span>
+                    <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Interview Column -->
+            <div class="bg-yellow-50 rounded-lg p-4">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-medium text-slate-900">Interview</h3>
+                <span class="bg-yellow-200 text-yellow-700 text-xs px-2 py-1 rounded-full">{{ applications.interview.length }}</span>
+              </div>
+              <div class="space-y-3">
+                <div *ngFor="let app of applications.interview" class="bg-white rounded-lg p-4 shadow-sm border border-yellow-200 cursor-pointer hover:shadow-md transition-shadow">
+                  <h4 class="font-medium text-slate-900 mb-1">{{ app.position }}</h4>
+                  <p class="text-sm text-slate-600 mb-2">{{ app.company }}</p>
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-500">{{ app.interviewDate }}</span>
+                    <div class="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Offer Column -->
+            <div class="bg-green-50 rounded-lg p-4">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-medium text-slate-900">Offer</h3>
+                <span class="bg-green-200 text-green-700 text-xs px-2 py-1 rounded-full">{{ applications.offer.length }}</span>
+              </div>
+              <div class="space-y-3">
+                <div *ngFor="let app of applications.offer" class="bg-white rounded-lg p-4 shadow-sm border border-green-200 cursor-pointer hover:shadow-md transition-shadow">
+                  <h4 class="font-medium text-slate-900 mb-1">{{ app.position }}</h4>
+                  <p class="text-sm text-slate-600 mb-2">{{ app.company }}</p>
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-500">{{ app.offerDate }}</span>
+                    <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Sidebar -->
+      <div class="space-y-6">
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <h3 class="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h3>
+          <div class="space-y-3">
+            <button class="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Add Job Application
+            </button>
+            <button class="w-full flex items-center justify-center px-4 py-3 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-all">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              Optimize Resume
+            </button>
+            <button class="w-full flex items-center justify-center px-4 py-3 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-all">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+              Import Jobs
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <h3 class="text-lg font-semibold text-slate-900 mb-4">Recent Activity</h3>
+          <div class="space-y-4">
+            <div *ngFor="let activity of recentActivity" class="flex items-start space-x-3">
+              <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="text-sm text-slate-900">{{ activity.message }}</p>
+                <p class="text-xs text-slate-500 mt-1">{{ activity.time }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming Interviews -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <h3 class="text-lg font-semibold text-slate-900 mb-4">Upcoming Interviews</h3>
+          <div class="space-y-4">
+            <div *ngFor="let interview of upcomingInterviews" class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+              <div>
+                <h4 class="font-medium text-slate-900">{{ interview.position }}</h4>
+                <p class="text-sm text-slate-600">{{ interview.company }}</p>
+                <p class="text-xs text-slate-500">{{ interview.date }} at {{ interview.time }}</p>
+              </div>
+              <button class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                View Details
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
