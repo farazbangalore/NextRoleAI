@@ -3,8 +3,10 @@ import { Component } from '@angular/core';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { AuthService, LoginRequest, SignupRequest } from '../services/auth.service';
+import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
+import { LoginRequest } from '../models/login.request';
+import { SignupRequest } from '../models/signup.request';
 
 
 @Component({
@@ -58,9 +60,9 @@ export class LoginComponent {
 
   handleLogin() {
     console.log('Validation:', this.validateLoginForm());
-    // if (!this.validateLoginForm()) {
-    //   return;
-    // }
+    if (!this.validateLoginForm()) {
+      return;
+    }
 
     this.isLoading = true;
 
@@ -72,11 +74,11 @@ export class LoginComponent {
     this.authService.login(loginData).subscribe({
       next: (response) => {
         this.isLoading = false;
-        if (response.success) {
+        if (response.status_code == 200) {
           this.showSuccess('Login successful!');
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/']);
         } else {
-          this.showError(response.message || 'Login failed');
+          this.showError(response.message);
         }
       },
       error: (error) => {

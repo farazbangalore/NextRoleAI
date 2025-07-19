@@ -1,63 +1,63 @@
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { Observable, BehaviorSubject, throwError } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
-
-// Interfaces
-export interface SignupRequest {
-    email: string;
-    password: string;
-    first_name: string;
-}
-
-export interface LoginRequest {
-    email: string;
-    password: string;
-}
-
-export interface AuthResponse {
-    success: boolean;
-    message: string;
-    user?: {
-        id: string;
-        email: string;
-        first_name: string;
-        last_name?: string;
-        created_at: string;
-    };
-    token?: string;
-}
-
-export interface User {
-    id: string;
-    email: string;
-    first_name: string;
-    last_name?: string;
-    created_at: string;
-}
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+import { AppConstants } from '../constants';
+import { SignupRequest } from '../models/signup.request';
+import { LoginRequest } from '../models/login.request';
+import { AuthResponse } from '../models/auth.response';
+import { ApiResponse } from '../models/api.response';
+import { User } from '../models/user_metadata';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
     private baseUrl = 'http://localhost:8000';
-    private tokenKey = 'nextRole_auth_token';
-    private userKey = 'nextRole_user_data';
 
-    // Observable for auth state management
     private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
-    private currentUserSubject = new BehaviorSubject<User | null>(this.getUserFromStorage());
-
     public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
-    public currentUser$ = this.currentUserSubject.asObservable();
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient) {
+        this.validateTokenOnAppLoad();
+    }
 
-    // Signup method
+    private validateTokenOnAppLoad() {
+        if (typeof window === 'undefined') {
+            return;
+        }
+        const token = localStorage.getItem(AppConstants.JWT_TOKEN);
+        if (!token) {
+            this.clearAuthData();
+            return;
+        }
+
+        this.http.get<{ userId: string, email: string }>(`${this.baseUrl}/users/user-metadata`, {
+            headers: { Authorization: `Bearer ${token}` }
+        }).pipe(
+            tap(response => {
+                if (response && response.userId && response.email) {
+                    const user: User = {
+                        id: response.userId,
+                        email: response.email,
+                    };
+                    this.isAuthenticatedSubject.next(true);
+                    localStorage.setItem(AppConstants.USER_METADATA, JSON.stringify(user));
+                    localStorage.setItem(AppConstants.JWT_TOKEN, token);
+                } else {
+                    this.clearAuthData();
+                }
+            }),
+            catchError(err => {
+                this.clearAuthData();
+                return of(null);
+            })
+        ).subscribe();
+    }
+
     signup(signupData: SignupRequest): Observable<AuthResponse> {
         console.log('Signup Service:', signupData);
         const headers = new HttpHeaders({
-            'user-id': '1234-user-id-xyz', // This should be dynamic in real implementation
             'Content-Type': 'application/json'
         });
 
@@ -72,18 +72,17 @@ export class AuthService {
             );
     }
 
-    // Login method
-    login(loginData: LoginRequest): Observable<AuthResponse> {
+    login(loginData: LoginRequest): Observable<ApiResponse> {
         const headers = new HttpHeaders({
-            'user-id': '1234-user-id-xyz',
             'Content-Type': 'application/json'
         });
-
-        return this.http.post<AuthResponse>(`${this.baseUrl}/users/login`, loginData, { headers })
+        return this.http.post<ApiResponse>(`${this.baseUrl}/users/login`, loginData, { headers })
             .pipe(
                 tap(response => {
-                    if (response.success && response.token && response.user) {
-                        this.setAuthData(response.token, response.user);
+                    if (response.status_code === 200 && response.data?.session?.access_token) {
+                        // Extract user data from response if available
+                        const userData = response.data.user || null;
+                        this.setAuthData(response.data.session.access_token, userData);
                     }
                 }),
                 catchError(this.handleError)
@@ -92,7 +91,6 @@ export class AuthService {
 
     // Social login methods
     googleLogin(): Observable<AuthResponse> {
-        // Implementation for Google OAuth
         return this.http.post<AuthResponse>(`${this.baseUrl}/auth/google`, {})
             .pipe(
                 tap(response => {
@@ -105,7 +103,6 @@ export class AuthService {
     }
 
     linkedinLogin(): Observable<AuthResponse> {
-        // Implementation for LinkedIn OAuth
         return this.http.post<AuthResponse>(`${this.baseUrl}/auth/linkedin`, {})
             .pipe(
                 tap(response => {
@@ -119,58 +116,76 @@ export class AuthService {
 
     // Logout method
     logout(): Observable<any> {
-        const headers = this.getAuthHeaders();
+        const token = this.getToken();
+        if (!token) {
+            // If no token, just clear local data
+            this.clearAuthData();
+            return of(null);
+        }
 
+        const headers = this.getAuthHeaders();
         return this.http.post(`${this.baseUrl}/users/logout`, {}, { headers })
             .pipe(
                 tap(() => {
                     this.clearAuthData();
                 }),
-                catchError(this.handleError)
+                catchError(err => {
+                    this.clearAuthData();
+                    return of(null);
+                })
             );
     }
 
-    // Check if user is authenticated
     isAuthenticated(): boolean {
         return this.hasToken() && !this.isTokenExpired();
     }
 
-    // Get current user
     getCurrentUser(): User | null {
-        return this.currentUserSubject.value;
+        if (typeof window === 'undefined') {
+            return null;
+        }
+
+        const userData = localStorage.getItem(AppConstants.USER_METADATA);
+        if (userData && this.getToken()) {
+            try {
+                return JSON.parse(userData);
+            } catch {
+                return null;
+            }
+        }
+        return null;
     }
 
-    // Get auth token
     getToken(): string | null {
-        return localStorage.getItem(this.tokenKey);
+        return typeof window !== 'undefined' ? localStorage.getItem(AppConstants.JWT_TOKEN) : null;
     }
 
-    // Private helper methods
-    private setAuthData(token: string, user: User): void {
-        localStorage.setItem(this.tokenKey, token);
-        localStorage.setItem(this.userKey, JSON.stringify(user));
+    // Private helper methods - FIXED
+    private setAuthData(token: string, user?: any): void {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem(AppConstants.JWT_TOKEN, token);
 
-        this.isAuthenticatedSubject.next(true);
-        this.currentUserSubject.next(user);
+            if (user) {
+                localStorage.setItem(AppConstants.USER_METADATA, JSON.stringify(user));
+            }
+
+            this.isAuthenticatedSubject.next(true);
+        }
     }
 
     private clearAuthData(): void {
-        localStorage.removeItem(this.tokenKey);
-        localStorage.removeItem(this.userKey);
-
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem(AppConstants.JWT_TOKEN);
+            localStorage.removeItem(AppConstants.USER_METADATA); 
+        }
         this.isAuthenticatedSubject.next(false);
-        this.currentUserSubject.next(null);
     }
 
     private hasToken(): boolean {
+        if (typeof window !== 'undefined') {
+            return !!localStorage.getItem(AppConstants.JWT_TOKEN);
+        }
         return false;
-        // return !!localStorage.getItem(this.tokenKey);
-    }
-
-    private getUserFromStorage(): User | null {
-        return null;
-        // const userData = localStorage.getItem(this.userKey);
-        // return userData ? JSON.parse(userData) : null;
     }
 
     private isTokenExpired(): boolean {

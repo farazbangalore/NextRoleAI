@@ -188,7 +188,7 @@
         <ng-template #authButtons>
           <!-- Authentication Buttons -->
           <button 
-            routerLink="/login"
+            (click)="login()"
             class="text-slate-600 hover:text-blue-600 px-4 py-2 text-sm font-medium transition-colors">
             Sign In
           </button>

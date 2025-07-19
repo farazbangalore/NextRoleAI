@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { AuthService } from '../services/auth.service';
 
 interface User {
   id: string;
@@ -37,7 +38,8 @@ export class NavigationComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -83,7 +85,9 @@ export class NavigationComponent implements OnInit, OnDestroy {
     const currentRoute = this.router.url;
     const authenticatedRoutes = ['/dashboard', '/applications', '/resume-builder', '/analytics', '/jobs', '/profile', '/settings', '/billing'];
 
-    this.isAuthenticated = authenticatedRoutes.some(route => currentRoute.startsWith(route));
+    // this.isAuthenticated = authenticatedRoutes.some(route => currentRoute.startsWith(route));
+
+    this.isAuthenticated = false;
 
     if (this.isAuthenticated) {
       // Mock user data - in real app, get from auth service
@@ -177,5 +181,10 @@ export class NavigationComponent implements OnInit, OnDestroy {
   updateAuthState(isAuthenticated: boolean, user: User | null = null): void {
     this.isAuthenticated = isAuthenticated;
     this.user = user;
+  }
+
+  login(): void {
+    // Navigate to login page
+    this.router.navigate(['/login']);
   }
 }
