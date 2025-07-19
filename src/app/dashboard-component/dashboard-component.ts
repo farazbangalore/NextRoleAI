@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Router, NavigationEnd } from '@angular/router';
 
 interface Application {
   id: string;
@@ -30,7 +31,7 @@ interface Interview {
 
 @Component({
   selector: 'app-dashboard-component',
-imports: [ReactiveFormsModule, CommonModule, FormsModule],
+  imports: [ReactiveFormsModule, CommonModule, FormsModule],
   templateUrl: './dashboard-component.html',
   styleUrl: './dashboard-component.css'
 })
@@ -38,6 +39,10 @@ imports: [ReactiveFormsModule, CommonModule, FormsModule],
 export class DashboardComponent implements OnInit {
   userName = 'John Doe';
   userInitials = 'JD';
+
+  constructor(
+    private router: Router,
+  ) { }
 
   stats = {
     activeApplications: 24,
@@ -168,7 +173,6 @@ export class DashboardComponent implements OnInit {
     }
   ];
 
-  constructor() { }
 
   ngOnInit(): void {
     this.loadUserData();
@@ -203,5 +207,11 @@ export class DashboardComponent implements OnInit {
   viewInterviewDetails(interviewId: string): void {
     // Navigate to interview details
     console.log('View interview details:', interviewId);
+  }
+
+  performNavigation(route: string): void {
+    console.log(`Navigating to ${route}`);
+    this.router.navigate([route]);
+    // Implement navigation logic here, e.g., using Angular Router
   }
 }

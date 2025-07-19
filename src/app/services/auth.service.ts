@@ -133,8 +133,7 @@ export class AuthService {
             return of(null);
         }
 
-        const headers = this.getAuthHeaders();
-        return this.http.post(`${this.baseUrl}/users/logout`, {}, { headers })
+        return this.http.post(`${this.baseUrl}/users/logout`, {}, { headers: { Authorization: `Bearer ${token}` } })
             .pipe(
                 tap(() => {
                     this.clearAuthData();

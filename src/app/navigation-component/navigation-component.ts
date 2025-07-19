@@ -84,7 +84,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
     // this.isAuthenticated = authenticatedRoutes.some(route => currentRoute.startsWith(route));
 
     this.currentUser = this.authService.getCurrentUser();
-    if(this.currentUser) {
+    if (this.currentUser) {
       this.isAuthenticated = true;
     }
   }
@@ -119,20 +119,40 @@ export class NavigationComponent implements OnInit, OnDestroy {
   }
 
   // Authentication actions
-  logout(): void {
-    // In real app, this would call your auth service
-    console.log('Logging out...');
 
-    // Clear auth state
-    this.isAuthenticated = false;
-    this.currentUser = null;
+  logout() {
 
-    // Close menus
-    this.closeUserMenu();
-    this.closeMobileMenu();
 
-    // Redirect to home
-    this.router.navigate(['/']);
+
+    this.authService.logout().subscribe({
+      next: (response) => {
+
+        if (response.status_code == 200) {
+          this.isAuthenticated = false;
+          this.currentUser = null;
+          this.closeUserMenu();
+          this.closeMobileMenu();
+          this.router.navigate(['/']);
+        } else {
+          this.isAuthenticated = false;
+          this.currentUser = null;
+          this.closeUserMenu();
+          this.closeMobileMenu();
+
+          this.router.navigate(['/']);
+        }
+      },
+      error: (error) => {
+        this.isAuthenticated = false;
+        this.currentUser = null;
+        // Close menus
+        this.closeUserMenu();
+        this.closeMobileMenu();
+
+        // Redirect to home
+        this.router.navigate(['/']);
+      }
+    });
   }
 
   // Router event handling
@@ -174,5 +194,10 @@ export class NavigationComponent implements OnInit, OnDestroy {
   login(): void {
     // Navigate to login page
     this.router.navigate(['/login']);
+  }
+
+  performNavigation(route: string): void {
+    console.log(`Navigating to ${route}`);
+    this.router.navigate([route]);
   }
 }

@@ -7,6 +7,6 @@ import { ApplicationComponent } from './application-component/application-compon
 export const routes: Routes = [
     { path: '', component: HomeComponent },
     { path: 'login', component: LoginComponent },
-    { path: 'dashbaord', component: DashboardComponent },
+    { path: 'dashboard', component: DashboardComponent },
     { path: 'add-application', component: ApplicationComponent },
 ];
