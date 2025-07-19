@@ -13,8 +13,7 @@ import { ToastService } from "./toast.service";
 export class JobApplicationService {
     private baseUrl = 'http://localhost:8000';
 
-    constructor(private http: HttpClient
-    ) {
+    constructor(private http: HttpClient) {
     }
 
     addJobApplication(application: JobApplicationRequest): Observable<ApiResponse> {
@@ -27,6 +26,16 @@ export class JobApplicationService {
                     if (response.status_code == 200) {
                         console.log('Application saved successfully:', response.data);
                     }
+                }),
+                catchError(this.handleError)
+            );
+    }
+
+    getJobApplications(): Observable<ApiResponse> {
+        return this.http.get<ApiResponse>(`${this.baseUrl}/job-application/list-all`)
+            .pipe(
+                tap(response => {
+                    console.log('Fetched job applications:', response.data);
                 }),
                 catchError(this.handleError)
             );

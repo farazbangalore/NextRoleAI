@@ -1,0 +1,241 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-slate-900 mb-2">Job Applications</h1>
+          <p class="text-slate-600">Track and manage all your job applications in one place</p>
+        </div>
+        <div class="mt-4 lg:mt-0">
+          <button 
+            routerLink="/add-application"
+            class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105 shadow-lg">
+            <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Add New Application
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+      <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+        <div class="text-2xl font-bold text-slate-900">{{ totalApplications }}</div>
+        <div class="text-sm text-slate-600">Total Applications</div>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+        <div class="text-2xl font-bold text-blue-600">{{ statusCounts.applied }}</div>
+        <div class="text-sm text-slate-600">Applied</div>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+        <div class="text-2xl font-bold text-yellow-600">{{ statusCounts.inReview }}</div>
+        <div class="text-sm text-slate-600">In Review</div>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+        <div class="text-2xl font-bold text-green-600">{{ statusCounts.interview }}</div>
+        <div class="text-sm text-slate-600">Interview</div>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+        <div class="text-2xl font-bold text-purple-600">{{ statusCounts.offer }}</div>
+        <div class="text-sm text-slate-600">Offers</div>
+      </div>
+    </div>
+
+    <!-- Filters and Search -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- Search -->
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Search</label>
+          <div class="relative">
+            <input
+              type="text"
+              [(ngModel)]="filters.search"
+              (input)="onFilterChange()"
+              placeholder="Company, position, or notes..."
+              class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+            <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Status Filter -->
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Status</label>
+          <select
+            [(ngModel)]="filters.status"
+            (change)="onFilterChange()"
+            class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+            <option value="">All Statuses</option>
+            <option value="applied">Applied</option>
+            <option value="inReview">In Review</option>
+            <option value="interview">Interview</option>
+            <option value="offer">Offer</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+
+        <!-- Date Range -->
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">From Date</label>
+          <input
+            type="date"
+            [(ngModel)]="filters.sortBy"
+            (change)="onFilterChange()"
+            class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+        </div>
+
+        <!-- Sort -->
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Sort By</label>
+          <select
+            [(ngModel)]="filters.sortBy"
+            (change)="onFilterChange()"
+            class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent">
+            <option value="appliedDate">Applied Date</option>
+            <option value="companyName">Company Name</option>
+            <option value="jobTitle">Job Title</option>
+            <option value="status">Status</option>
+            <option value="atsScore">ATS Score</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Clear Filters -->
+      <div class="mt-4 flex justify-end">
+        <button
+          (click)="clearFilters()"
+          class="text-slate-600 hover:text-blue-600 text-sm font-medium transition-colors">
+          Clear Filters
+        </button>
+      </div>
+    </div>
+
+    <!-- Applications Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="p-8 text-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+        <p class="text-slate-600 mt-2">Loading applications...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoading && filteredApplications.length === 0" class="p-12 text-center">
+        <div class="w-16 h-16 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-medium text-slate-900 mb-2">No applications found</h3>
+        <p class="text-slate-600 mb-6">Get started by adding your first job application.</p>
+        <button 
+          routerLink="/add-application"
+          class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all">
+          Add Your First Application
+        </button>
+      </div>
+
+      <!-- Applications Data Table -->
+      <table *ngIf="!isLoading && filteredApplications.length > 0" class="min-w-full divide-y divide-slate-200">
+        <thead class="bg-slate-100">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
+              Company
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
+              Job Title
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
+              Status
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
+              Applied Date
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
+              ATS Score
+            </th>
+            <th scope="col" class="relative px-6 py-3">
+              <span class="sr-only">Actions</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-slate-200">
+          <tr *ngFor="let application of filteredApplications" class="hover:bg-slate-50 cursor-pointer">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">{{ application.company }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{{ application.title }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span [class]="getStatusBadgeClass(application.status) + ' px-2 py-1 rounded-full text-xs font-medium'">
+                {{ getStatusLabel(application.status) }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">{{ application.applied_date | date:'mediumDate' }}</td>
+         
+            <ng-template #noScore>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-400">N/A</td>
+            </ng-template>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium relative">
+              <button (click)="toggleApplicationMenu(application.id)" class="text-slate-400 hover:text-slate-600 focus:outline-none">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                </svg>
+              </button>
+
+              <!-- Dropdown Menu -->
+            <div *ngIf="activeApplicationMenu === application.id"
+                class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-slate-200 z-10">
+                <div class="py-1">
+                    <button (click)="viewApplication(application)"
+                        class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">View Details</button>
+                    <div class="border-t border-slate-50"></div>
+                    <button (click)="editApplication(application)"
+                        class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Edit Application</button>
+                    <div class="border-t border-slate-50"></div>
+                    <button *ngIf="application.ref_url" (click)="openUrl(application.ref_url)"
+                        class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Open Job Posting</button>
+                    <div class="border-t border-slate-200"></div>
+                    <button (click)="deleteApplication(application)"
+                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Delete</button>
+                </div>
+            </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="totalPages > 1" class="mt-8 flex items-center justify-center">
+      <div class="flex items-center space-x-2">
+        <button
+          (click)="goToPage(currentPage - 1)"
+          [disabled]="currentPage === 1"
+          class="px-3 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed">
+          Previous
+        </button>
+        
+        <div class="flex items-center space-x-1">
+          <button
+            *ngFor="let page of getPageNumbers()"
+            (click)="goToPage(page)"
+            [class]="page === currentPage ? 'bg-blue-600 text-white' : 'text-slate-700 hover:bg-slate-100'"
+            class="px-3 py-2 text-sm font-medium rounded-lg transition-colors">
+            {{ page }}
+          </button>
+        </div>
+
+        <button
+          (click)="goToPage(currentPage + 1)"
+          [disabled]="currentPage === totalPages"
+          class="px-3 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed">
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

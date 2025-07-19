@@ -27,10 +27,12 @@ export class ApplicationComponent implements OnInit {
     recruiterEmail: ''
   };
 
+  apiCallInProgress: boolean = false;
+
   constructor(private router: Router,
     private jobApplicationService: JobApplicationService,
     private toastService: ToastService,
-    private cdr: ChangeDetectorRef 
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -82,7 +84,7 @@ export class ApplicationComponent implements OnInit {
     this.saveDraftApplication(draftApplication);
   }
 
-  goBack(): void {
+  navigateToDashboard(): void {
     // Navigate back to dashboard
     this.router.navigate(['/dashboard']);
   }
@@ -101,6 +103,7 @@ export class ApplicationComponent implements OnInit {
   }
 
   private saveApplication(application: JobApplicationRequest): void {
+    this.apiCallInProgress = true;
     console.log('Saving application:', application);
     this.jobApplicationService.addJobApplication(application).subscribe({
       next: (response) => {
@@ -109,15 +112,18 @@ export class ApplicationComponent implements OnInit {
           this.toastService.showSuccess('Application saved successfully!', 2000);
           console.log('Application saved:', response.data);
           this.cdr.detectChanges();
+          this.apiCallInProgress = false;
+          this.navigateToDashboard()
         } else {
           console.error('Error saving application:', response.message);
+          this.apiCallInProgress = false;
         }
       },
       error: (error) => {
         console.error('Error saving application:', error);
         alert('Failed to save application. Please try again later.');
       }
-    })
+    });
 
   }
 
