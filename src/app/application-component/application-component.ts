@@ -2,6 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { JobApplicationRequest } from '../models/request/job-application.request';
+import { JobApplicationService } from '../services/job-application.service';
+
 @Component({
   selector: 'app-application-component',
   imports: [ReactiveFormsModule, CommonModule, FormsModule],
@@ -23,7 +26,9 @@ export class ApplicationComponent implements OnInit {
     recruiterEmail: ''
   };
 
-  constructor(private router: Router) { }
+  constructor(private router: Router,
+    private jobApplicationService: JobApplicationService
+  ) { }
 
   ngOnInit(): void {
     // Set default applied date to today
@@ -40,20 +45,20 @@ export class ApplicationComponent implements OnInit {
     }
 
     // Create application object
-    const newApplication = {
-      id: this.generateId(),
-      companyName: this.formData.companyName,
-      jobTitle: this.formData.jobTitle,
-      referenceUrl: this.formData.referenceUrl,
-      appliedDate: this.formData.appliedDate,
+    const newApplication: JobApplicationRequest = {
+      company: this.formData.companyName,
+      title: this.formData.jobTitle,
+      ref_url: this.formData.referenceUrl,
       status: this.formData.status,
+      applied_date: 123,
       notes: this.formData.notes,
-      jobDescription: this.formData.jobDescription,
-      recruiterName: this.formData.recruiterName,
-      recruiterEmail: this.formData.recruiterEmail,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+      job_description: this.formData.jobDescription,
+      recruiter_info: {
+        name: this.formData.recruiterName,
+        email: this.formData.recruiterEmail,
+        phone: ''
+      }
+    }
 
     // Save application
     this.saveApplication(newApplication);
@@ -91,20 +96,24 @@ export class ApplicationComponent implements OnInit {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
   }
 
-  private saveApplication(application: any): void {
-    // In a real application, this would call your API service
+  private saveApplication(application: JobApplicationRequest): void {
     console.log('Saving application:', application);
+    this.jobApplicationService.addJobApplication(application).subscribe({
+      next: (response) => {
+        if (response.status_code === 200) {
+          this.showSuccessMessage('Application saved successfully!');
+          this.resetForm();
+          console.log('Application saved:', response.data);
+        } else {
+          console.error('Error saving application:', response.message);
+        }
+      },
+      error: (error) => {
+        console.error('Error saving application:', error);
+        alert('Failed to save application. Please try again later.');
+      }
+    })
 
-    // Simulate API call
-    setTimeout(() => {
-      this.showSuccessMessage('Application added successfully!');
-      this.resetForm();
-
-      // Navigate back to dashboard after short delay
-      setTimeout(() => {
-        this.router.navigate(['/dashboard']);
-      }, 1500);
-    }, 1000);
   }
 
   private saveDraftApplication(draft: any): void {
@@ -159,3 +168,4 @@ export class ApplicationComponent implements OnInit {
     }
   }
 }
+

@@ -121,9 +121,6 @@ export class NavigationComponent implements OnInit, OnDestroy {
   // Authentication actions
 
   logout() {
-
-
-
     this.authService.logout().subscribe({
       next: (response) => {
 
