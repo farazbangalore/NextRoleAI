@@ -4,6 +4,7 @@ import { JobApplicationRequest } from "../models/request/job-application.request
 import { Observable, throwError } from "rxjs";
 import { ApiResponse } from "../models/api.response";
 import { catchError, tap } from 'rxjs/operators';
+import { ToastService } from "./toast.service";
 
 
 @Injectable({
@@ -12,14 +13,14 @@ import { catchError, tap } from 'rxjs/operators';
 export class JobApplicationService {
     private baseUrl = 'http://localhost:8000';
 
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient
+    ) {
     }
 
     addJobApplication(application: JobApplicationRequest): Observable<ApiResponse> {
         const headers = new HttpHeaders({
             'Content-Type': 'application/json'
         });
-
         return this.http.post<ApiResponse>(`${this.baseUrl}/job-application/`, application, { headers })
             .pipe(
                 tap(response => {

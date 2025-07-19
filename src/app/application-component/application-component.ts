@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { JobApplicationRequest } from '../models/request/job-application.request';
 import { JobApplicationService } from '../services/job-application.service';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-application-component',
@@ -27,7 +28,9 @@ export class ApplicationComponent implements OnInit {
   };
 
   constructor(private router: Router,
-    private jobApplicationService: JobApplicationService
+    private jobApplicationService: JobApplicationService,
+    private toastService: ToastService,
+    private cdr: ChangeDetectorRef 
   ) { }
 
   ngOnInit(): void {
@@ -41,6 +44,7 @@ export class ApplicationComponent implements OnInit {
 
     // Validate required fields
     if (!this.isFormValid()) {
+      this.toastService.showError('Some Fields are missing!', 2000);
       return;
     }
 
@@ -101,9 +105,10 @@ export class ApplicationComponent implements OnInit {
     this.jobApplicationService.addJobApplication(application).subscribe({
       next: (response) => {
         if (response.status_code === 200) {
-          this.showSuccessMessage('Application saved successfully!');
           this.resetForm();
+          this.toastService.showSuccess('Application saved successfully!', 2000);
           console.log('Application saved:', response.data);
+          this.cdr.detectChanges();
         } else {
           console.error('Error saving application:', response.message);
         }
