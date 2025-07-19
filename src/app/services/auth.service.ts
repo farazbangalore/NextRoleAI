@@ -7,7 +7,7 @@ import { SignupRequest } from '../models/signup.request';
 import { LoginRequest } from '../models/login.request';
 import { AuthResponse } from '../models/auth.response';
 import { ApiResponse } from '../models/api.response';
-import { User } from '../models/user_metadata';
+import { UserMetadata } from '../models/user_metadata';
 
 @Injectable({
     providedIn: 'root'
@@ -18,11 +18,13 @@ export class AuthService {
     private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
     public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
+    private currentUserMetadata = new BehaviorSubject<UserMetadata | null>(this.getUserFromStorage());
+    public currentUser$ = this.currentUserMetadata.asObservable();
+
     constructor(private http: HttpClient) {
-        this.validateTokenOnAppLoad();
     }
 
-    private validateTokenOnAppLoad() {
+    public validateTokenOnAppLoad() {
         if (typeof window === 'undefined') {
             return;
         }
@@ -32,18 +34,22 @@ export class AuthService {
             return;
         }
 
-        this.http.get<{ userId: string, email: string }>(`${this.baseUrl}/users/user-metadata`, {
+        this.http.get<ApiResponse>(`${this.baseUrl}/users/user-metadata`, {
             headers: { Authorization: `Bearer ${token}` }
         }).pipe(
             tap(response => {
-                if (response && response.userId && response.email) {
-                    const user: User = {
-                        id: response.userId,
-                        email: response.email,
+                if (response.status_code == 200) {
+                    const user: UserMetadata = {
+                        id: response.data.id,
+                        email: response.data.email,
+                        first_name: response.data.first_name,
+                        last_name: response.data.last_name,
+                        avatar: response.data.avatar
                     };
                     this.isAuthenticatedSubject.next(true);
-                    localStorage.setItem(AppConstants.USER_METADATA, JSON.stringify(user));
+                    this.currentUserMetadata.next(user);
                     localStorage.setItem(AppConstants.JWT_TOKEN, token);
+                    localStorage.setItem(AppConstants.USER_METADATA, JSON.stringify(user));
                 } else {
                     this.clearAuthData();
                 }
@@ -79,9 +85,14 @@ export class AuthService {
         return this.http.post<ApiResponse>(`${this.baseUrl}/users/login`, loginData, { headers })
             .pipe(
                 tap(response => {
-                    if (response.status_code === 200 && response.data?.session?.access_token) {
-                        // Extract user data from response if available
-                        const userData = response.data.user || null;
+                    if (response.status_code === 200) {
+                        const userData: UserMetadata = {
+                            id: response.data.user.id,
+                            email: response.data.user.user_metadata.email,
+                            first_name: response.data.user.user_metadata.first_name,
+                            last_name: response.data.user.user_metadata.last_name || '',
+                            avatar: response.data.user.avatar || ''
+                        }
                         this.setAuthData(response.data.session.access_token, userData);
                     }
                 }),
@@ -118,7 +129,6 @@ export class AuthService {
     logout(): Observable<any> {
         const token = this.getToken();
         if (!token) {
-            // If no token, just clear local data
             this.clearAuthData();
             return of(null);
         }
@@ -136,11 +146,7 @@ export class AuthService {
             );
     }
 
-    isAuthenticated(): boolean {
-        return this.hasToken() && !this.isTokenExpired();
-    }
-
-    getCurrentUser(): User | null {
+    getCurrentUser(): UserMetadata | null {
         if (typeof window === 'undefined') {
             return null;
         }
@@ -160,25 +166,22 @@ export class AuthService {
         return typeof window !== 'undefined' ? localStorage.getItem(AppConstants.JWT_TOKEN) : null;
     }
 
-    // Private helper methods - FIXED
-    private setAuthData(token: string, user?: any): void {
+    private setAuthData(token: string, user: UserMetadata): void {
         if (typeof window !== 'undefined') {
             localStorage.setItem(AppConstants.JWT_TOKEN, token);
-
-            if (user) {
-                localStorage.setItem(AppConstants.USER_METADATA, JSON.stringify(user));
-            }
-
+            localStorage.setItem(AppConstants.USER_METADATA, JSON.stringify(user));
             this.isAuthenticatedSubject.next(true);
+            this.currentUserMetadata.next(user);
         }
     }
 
     private clearAuthData(): void {
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined') {//DONOT COME HERE
             localStorage.removeItem(AppConstants.JWT_TOKEN);
-            localStorage.removeItem(AppConstants.USER_METADATA); 
+            localStorage.removeItem(AppConstants.USER_METADATA);
         }
         this.isAuthenticatedSubject.next(false);
+        this.currentUserMetadata.next(null);
     }
 
     private hasToken(): boolean {
@@ -186,6 +189,21 @@ export class AuthService {
             return !!localStorage.getItem(AppConstants.JWT_TOKEN);
         }
         return false;
+    }
+
+    private getUserFromStorage(): UserMetadata | null {
+        if (typeof window !== 'undefined') {
+            const userMetadata = localStorage.getItem(AppConstants.USER_METADATA);
+            if (userMetadata) {
+                try {
+                    const user: UserMetadata | null = userMetadata ? JSON.parse(userMetadata) : null;
+                    return user;
+                } catch (e) {
+                    console.error('Error parsing user metadata:', e);
+                }
+            }
+        }
+        return null;
     }
 
     private isTokenExpired(): boolean {

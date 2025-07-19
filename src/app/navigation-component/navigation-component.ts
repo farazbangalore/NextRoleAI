@@ -6,13 +6,9 @@ import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
+import { UserMetadata } from '../models/user_metadata';
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-}
+
 
 
 @Component({
@@ -26,7 +22,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
 
   // Authentication state
   isAuthenticated = false;
-  user: User | null = null;
+  currentUser: UserMetadata | null = null;
 
   // UI state
   isUserMenuOpen = false;
@@ -55,16 +51,16 @@ export class NavigationComponent implements OnInit, OnDestroy {
 
   // Computed properties
   get userName(): string {
-    return this.user?.name || 'Guest User';
+    return this.currentUser?.first_name || 'Guest User';
   }
 
   get userEmail(): string {
-    return this.user?.email || 'guest@example.com';
+    return this.currentUser?.email || 'guest@example.com';
   }
 
   get userInitials(): string {
-    if (!this.user?.name) return 'GU';
-    return this.user.name
+    if (!this.currentUser?.first_name) return 'GU';
+    return this.currentUser.first_name
       .split(' ')
       .map(n => n[0])
       .join('')
@@ -87,17 +83,9 @@ export class NavigationComponent implements OnInit, OnDestroy {
 
     // this.isAuthenticated = authenticatedRoutes.some(route => currentRoute.startsWith(route));
 
-    this.isAuthenticated = false;
-
-    if (this.isAuthenticated) {
-      // Mock user data - in real app, get from auth service
-      this.user = {
-        id: '1',
-        name: 'John Doe',
-        email: 'john.doe@example.com'
-      };
-    } else {
-      this.user = null;
+    this.currentUser = this.authService.getCurrentUser();
+    if(this.currentUser) {
+      this.isAuthenticated = true;
     }
   }
 
@@ -137,7 +125,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
 
     // Clear auth state
     this.isAuthenticated = false;
-    this.user = null;
+    this.currentUser = null;
 
     // Close menus
     this.closeUserMenu();
@@ -178,9 +166,9 @@ export class NavigationComponent implements OnInit, OnDestroy {
   }
 
   // Method to handle authentication state changes from external sources
-  updateAuthState(isAuthenticated: boolean, user: User | null = null): void {
+  updateAuthState(isAuthenticated: boolean, user: UserMetadata | null = null): void {
     this.isAuthenticated = isAuthenticated;
-    this.user = user;
+    this.currentUser = user;
   }
 
   login(): void {
