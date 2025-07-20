@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { JobApplicationRequest } from '../models/request/job-application.request';
 import { JobApplicationService } from '../services/job-application.service';
 import { ToastService } from '../services/toast.service';
+import { ConfirmationDialogService } from '../services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-application-component',

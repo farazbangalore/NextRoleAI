@@ -7,6 +7,8 @@ import { ApplicationFilters } from '../models/util/job-application.filter';
 import { ApiResponse } from '../models/api.response';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ConfirmationDialogService } from '../services/confirmation-dialog.service';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-application-landing-component',
@@ -48,7 +50,9 @@ export class ApplicationLandingComponent implements OnInit, OnDestroy {
   constructor(
     private jobApplicationService: JobApplicationService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private confirmationDialog: ConfirmationDialogService,
+    private toastService: ToastService,
   ) { }
 
   ngOnInit(): void {
@@ -257,7 +261,34 @@ export class ApplicationLandingComponent implements OnInit, OnDestroy {
     return pages;
   }
 
-  deleteApplication(application: JobApplicationDto): void {
+  async deleteApplication(application: JobApplicationDto): Promise<void> {
+    const confirmed = await this.confirmationDialog.confirm({
+      title: 'Delete Application',
+      message: `Are you sure you want to delete this application for ${application.company}? This action cannot be undone.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      type: 'danger'
+    });
+
+    if (!confirmed) {
+      return;
+    }
+    this.isLoading = true;
+    this.jobApplicationService.deleteJobApplicationById(application.id)
+      .subscribe({
+        next: (response: ApiResponse) => {
+          this.toastService.showSuccess('Application deleted successfully!', 2000);
+          console.log('Application deleted:', response.data);
+          this.isLoading = false;
+          this.activeApplicationMenu = null;
+          this.loadApplications();
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          console.error('Error loading applications:', error);
+          this.isLoading = false;
+        }
+      });
   }
 
   // Close menu when clicking outside

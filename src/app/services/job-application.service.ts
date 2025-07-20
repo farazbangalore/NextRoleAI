@@ -51,6 +51,16 @@ export class JobApplicationService {
             );
     }
 
+    deleteJobApplicationById(id: string): Observable<ApiResponse> {
+        return this.http.delete<ApiResponse>(`${this.baseUrl}/job-application/${id}`)
+            .pipe(
+                tap(response => {
+                    console.log('Fetched job application:', response.data);
+                }),
+                catchError(this.handleError)
+            );
+    }
+
     updateJobApplication(id: string, request: JobApplicationRequest): Observable<ApiResponse> {
         const headers = new HttpHeaders({
             'Content-Type': 'application/json'
