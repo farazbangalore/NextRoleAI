@@ -1,8 +1,14 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { UserProfileService, UserProfile, Education, Experience, Skills, Certification } from '../services/user-profile.service';
+import { UserProfileService } from '../services/user-profile.service';
 import { Subscription } from 'rxjs';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { UserDetailsDto } from '../models/dto/user-details.dto';
+import { ApiResponse } from '../models/api.response';
+import { Education } from '../models/util/education';
+import { Certification } from '../models/util/certification';
+import { Experience } from '../models/util/experience';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-user-details-component',
@@ -11,10 +17,11 @@ import { CommonModule } from '@angular/common';
   styleUrl: './user-details-component.css'
 })
 export class UserDetailsComponent implements OnInit, OnDestroy {
-  profile: UserProfile | null = null;
-  editableProfile: UserProfile = this.createEmptyProfile();
+  currentUserProfile: UserDetailsDto | null = null;
+  editableProfile: UserDetailsDto = this.createEmptyProfile();
   isLoading = true;
   isFetchingProfile = false;
+  isUpdatingProfile = false;
   isEditing = false;
 
   private profileSubscription!: Subscription;
@@ -24,7 +31,8 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
   ];
 
   constructor(private userProfileService: UserProfileService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toastService: ToastService
   ) { }
 
   ngOnInit(): void {
@@ -39,49 +47,49 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
 
   loadProfile(): void {
     this.isLoading = true;
-
-    // Using mock data for development - replace with actual API call
-    setTimeout(() => {
-      this.profile = this.userProfileService.getMockProfile();
-      this.editableProfile = this.deepClone(this.profile);
-      this.isLoading = false;
-      this.cdr.markForCheck();
-    }, 500);
-
-    // Uncomment when API is ready:
-    // this.userProfileService.getUserProfile().subscribe({
-    //   next: (profile) => {
-    //     this.profile = profile;
-    //     this.editableProfile = this.deepClone(profile);
-    //     this.isLoading = false;
-    //   },
-    //   error: (error) => {
-    //     console.error('Error loading profile:', error);
-    //     this.isLoading = false;
-    //   }
-    // });
+    this.isFetchingProfile = true;
+    this.userProfileService.getUserProfile()
+      .subscribe({
+        next: (response: ApiResponse) => {
+          this.currentUserProfile = response.data as UserDetailsDto;
+          this.editableProfile = this.deepClone(this.currentUserProfile);;
+          this.isLoading = false;
+          this.isFetchingProfile = false;
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          console.error('Error loading applications:', error);
+          this.isLoading = false;
+          this.isFetchingProfile = false;
+        }
+      });
   }
 
   toggleEditMode(): void {
     this.isEditing = true;
-    this.editableProfile = this.deepClone(this.profile!);
+    this.editableProfile = this.deepClone(this.currentUserProfile!);
   }
 
   cancelEdit(): void {
     this.isEditing = false;
-    this.editableProfile = this.deepClone(this.profile!);
+    this.editableProfile = this.deepClone(this.currentUserProfile!);
   }
 
   saveProfile(): void {
+    this.isUpdatingProfile = true;
     this.userProfileService.updateUserProfile(this.editableProfile).subscribe({
-      next: (updatedProfile) => {
-        this.profile = updatedProfile;
+      next: (updatedProfile: ApiResponse) => {
+        this.currentUserProfile = updatedProfile.data as UserDetailsDto;
         this.isEditing = false;
-        alert('Profile updated successfully!');
+        this.isUpdatingProfile = false;
+        this.toastService.showSuccess('Profile updated successfully');
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Error updating profile:', error);
         alert('Failed to update profile. Please try again.');
+        this.isUpdatingProfile = false;
+
       }
     });
   }
@@ -112,6 +120,7 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
   // Education methods
   addEducation(): void {
     const newEducation: Education = {
+      id: this.editableProfile.education.length,
       institution_name: '',
       start_year: new Date().getFullYear(),
       course: '',
@@ -122,6 +131,7 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
 
   addCertification(): void {
     const newCertification: Certification = {
+      id: this.editableProfile.certifications.length,
       name: '',
       issuing_organization: '',
       credential_url: '',
@@ -144,6 +154,7 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
   // Experience methods
   addExperience(): void {
     const newExperience: Experience = {
+      id: this.editableProfile.experience.length,
       company: '',
       title: '',
       start_year: new Date().getFullYear(),
@@ -199,9 +210,9 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
 
   // Utility methods
   getInitials(): string {
-    if (!this.profile) return 'U';
-    const firstName = this.profile.first_name || '';
-    const lastName = this.profile.last_name || '';
+    if (!this.currentUserProfile) return 'U';
+    const firstName = this.currentUserProfile.first_name || '';
+    const lastName = this.currentUserProfile.last_name || '';
     return (firstName[0] || '') + (lastName[0] || '');
   }
 
@@ -210,7 +221,7 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
     return this.months[monthNumber - 1];
   }
 
-  private createEmptyProfile(): UserProfile {
+  private createEmptyProfile(): UserDetailsDto {
     return {
       first_name: '',
       last_name: '',

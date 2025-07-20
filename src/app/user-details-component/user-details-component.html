@@ -40,7 +40,7 @@
     </div>
 
     <!-- Profile Content -->
-    <div *ngIf="!isLoading && profile" class="space-y-6">
+    <div *ngIf="!isLoading && currentUserProfile" class="space-y-6">
       <!-- Basic Information -->
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-3.5">
@@ -57,9 +57,9 @@
             <!-- Profile Photo -->
             <div class="relative">
               <div class="w-20 h-20 rounded-full overflow-hidden bg-slate-200">
-                <img *ngIf="profile.photo_url" [src]="profile.photo_url" alt="Profile"
+                <img *ngIf="currentUserProfile.photo_url" [src]="currentUserProfile.photo_url" alt="Profile"
                   class="w-full h-full object-cover">
-                <div *ngIf="!profile.photo_url"
+                <div *ngIf="!currentUserProfile.photo_url"
                   class="w-full h-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
                   <span class="text-white text-xl font-bold">{{ getInitials() }}</span>
                 </div>
@@ -83,19 +83,19 @@
                 <label class="block text-sm font-medium text-slate-700 mb-1">First Name</label>
                 <input *ngIf="isEditing" [(ngModel)]="editableProfile.first_name" type="text"
                   class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm">
-                <p *ngIf="!isEditing" class="text-slate-900 font-medium">{{ profile.first_name }}</p>
+                <p *ngIf="!isEditing" class="text-slate-900 font-medium">{{ currentUserProfile.first_name }}</p>
               </div>
               <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1">Last Name</label>
                 <input *ngIf="isEditing" [(ngModel)]="editableProfile.last_name" type="text"
                   class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm">
-                <p *ngIf="!isEditing" class="text-slate-900 font-medium">{{ profile.last_name || 'Not specified' }}</p>
+                <p *ngIf="!isEditing" class="text-slate-900 font-medium">{{ currentUserProfile.last_name || 'Not specified' }}</p>
               </div>
               <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
                 <input *ngIf="isEditing" [(ngModel)]="editableProfile.email" type="email"
                   class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm">
-                <p *ngIf="!isEditing" class="text-slate-900 font-medium">{{ profile.email }}</p>
+                <p *ngIf="!isEditing" class="text-slate-900 font-medium">{{ currentUserProfile.email }}</p>
               </div>
             </div>
           </div>
@@ -122,9 +122,9 @@
                 placeholder="https://linkedin.com/in/..."
                 class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm">
               <div *ngIf="!isEditing" class="flex items-center">
-                <a *ngIf="profile.linkedin_url" [href]="profile.linkedin_url" target="_blank"
-                  class="text-blue-600 hover:text-blue-700 font-medium text-sm truncate">{{ profile.linkedin_url }}</a>
-                <span *ngIf="!profile.linkedin_url" class="text-slate-500 text-sm">Not specified</span>
+                <a *ngIf="currentUserProfile.linkedin_url" [href]="currentUserProfile.linkedin_url" target="_blank"
+                  class="text-blue-600 hover:text-blue-700 font-medium text-sm truncate">{{ currentUserProfile.linkedin_url }}</a>
+                <span *ngIf="!currentUserProfile.linkedin_url" class="text-slate-500 text-sm">Not specified</span>
               </div>
             </div>
             <div>
@@ -133,10 +133,10 @@
                 placeholder="https://leetcode.com/..."
                 class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm">
               <div *ngIf="!isEditing" class="flex items-center">
-                <a *ngIf="profile.leetcode_url" [href]="profile.leetcode_url" target="_blank"
-                  class="text-orange-600 hover:text-orange-700 font-medium text-sm truncate">{{ profile.leetcode_url
+                <a *ngIf="currentUserProfile.leetcode_url" [href]="currentUserProfile.leetcode_url" target="_blank"
+                  class="text-orange-600 hover:text-orange-700 font-medium text-sm truncate">{{ currentUserProfile.leetcode_url
                   }}</a>
-                <span *ngIf="!profile.leetcode_url" class="text-slate-500 text-sm">Not specified</span>
+                <span *ngIf="!currentUserProfile.leetcode_url" class="text-slate-500 text-sm">Not specified</span>
               </div>
             </div>
             <div>
@@ -144,10 +144,10 @@
               <input *ngIf="isEditing" [(ngModel)]="editableProfile.portfolio_url" type="url" placeholder="https://..."
                 class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm">
               <div *ngIf="!isEditing" class="flex items-center">
-                <a *ngIf="profile.portfolio_url" [href]="profile.portfolio_url" target="_blank"
-                  class="text-purple-600 hover:text-purple-700 font-medium text-sm truncate">{{ profile.portfolio_url
+                <a *ngIf="currentUserProfile.portfolio_url" [href]="currentUserProfile.portfolio_url" target="_blank"
+                  class="text-purple-600 hover:text-purple-700 font-medium text-sm truncate">{{ currentUserProfile.portfolio_url
                   }}</a>
-                <span *ngIf="!profile.portfolio_url" class="text-slate-500 text-sm">Not specified</span>
+                <span *ngIf="!currentUserProfile.portfolio_url" class="text-slate-500 text-sm">Not specified</span>
               </div>
             </div>
           </div>
@@ -404,9 +404,9 @@
                   Add Technical Skill</button>
               </div>
               <div *ngIf="!isEditing" class="flex flex-wrap gap-2">
-                <span *ngFor="let skill of profile.skills?.technical_skills || []"
+                <span *ngFor="let skill of currentUserProfile.skills?.technical_skills || []"
                   class="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full text-sm font-medium">{{ skill }}</span>
-                <span *ngIf="!profile.skills?.technical_skills?.length" class="text-slate-500 text-sm">No technical
+                <span *ngIf="!currentUserProfile.skills?.technical_skills?.length" class="text-slate-500 text-sm">No technical
                   skills added</span>
               </div>
             </div>
@@ -432,10 +432,10 @@
                   Add Soft Skill</button>
               </div>
               <div *ngIf="!isEditing" class="flex flex-wrap gap-2">
-                <span *ngFor="let skill of profile.skills?.soft_skills || []"
+                <span *ngFor="let skill of currentUserProfile.skills?.soft_skills || []"
                   class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-full text-sm font-medium">{{ skill
                   }}</span>
-                <span *ngIf="!profile.skills?.soft_skills?.length" class="text-slate-500 text-sm">No soft skills
+                <span *ngIf="!currentUserProfile.skills?.soft_skills?.length" class="text-slate-500 text-sm">No soft skills
                   added</span>
               </div>
             </div>
