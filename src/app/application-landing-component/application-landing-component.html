@@ -166,8 +166,8 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-slate-200">
-          <tr *ngFor="let application of filteredApplications" class="hover:bg-slate-50 cursor-pointer">
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">{{ application.company }}</td>
+          <tr *ngFor="let application of filteredApplications" class="hover:bg-slate-50">
+            <td (click)="openApplication(application)" class="cursor-pointer px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-500">{{ application.company }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{{ application.title }}</td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span [class]="getStatusBadgeClass(application.status) + ' px-2 py-1 rounded-full text-xs font-medium'">

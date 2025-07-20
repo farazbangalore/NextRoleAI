@@ -29,6 +29,8 @@ export class ApplicationComponent implements OnInit {
   };
 
   apiCallInProgress: boolean = false;
+  isApplicationFetching: boolean = false;
+  isUpdateCallInProgress: boolean = false;
   applicationId: string | null = null; // Track loaded application
 
   constructor(
@@ -57,6 +59,7 @@ export class ApplicationComponent implements OnInit {
 
   loadApplication(id: string): void {
     this.apiCallInProgress = true;
+    this.isApplicationFetching = true;
     this.jobApplicationService.getJobApplicationById(id).subscribe({
       next: (response) => {
         if (response.status_code === 200) {
@@ -75,10 +78,12 @@ export class ApplicationComponent implements OnInit {
           };
         }
         this.apiCallInProgress = false;
+        this.isApplicationFetching = false;
         this.cdr.markForCheck();
       },
       error: () => {
         this.apiCallInProgress = false;
+        this.isApplicationFetching = false;
         this.toastService.showError('Failed to load application', 2000);
       }
     });
@@ -127,16 +132,19 @@ export class ApplicationComponent implements OnInit {
       }
     }
     this.apiCallInProgress = true;
+    this.isUpdateCallInProgress = true;
     this.jobApplicationService.updateJobApplication(this.applicationId!, updatedApplication).subscribe({
       next: (response) => {
         if (response.status_code === 200) {
           this.toastService.showSuccess('Application updated successfully!', 2000);
           this.mode = 'view';
           this.apiCallInProgress = false;
+          this.isUpdateCallInProgress = false;
           this.cdr.markForCheck();
         } else {
           this.toastService.showError('Failed to update application', 2000);
           this.apiCallInProgress = false;
+          this.isUpdateCallInProgress = false;
         }
       },
       error: () => {
