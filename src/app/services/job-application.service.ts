@@ -41,6 +41,31 @@ export class JobApplicationService {
             );
     }
 
+    getJobApplicationById(id: string): Observable<ApiResponse> {
+        return this.http.get<ApiResponse>(`${this.baseUrl}/job-application/${id}`)
+            .pipe(
+                tap(response => {
+                    console.log('Fetched job application:', response.data);
+                }),
+                catchError(this.handleError)
+            );
+    }
+
+    updateJobApplication(id: string, request: JobApplicationRequest): Observable<ApiResponse> {
+        const headers = new HttpHeaders({
+            'Content-Type': 'application/json'
+        });
+        return this.http.put<ApiResponse>(`${this.baseUrl}/job-application/${id}`, request, { headers })
+            .pipe(
+                tap(response => {
+                    if (response.status_code == 200) {
+                        console.log('Application updated successfully:', response.data);
+                    }
+                }),
+                catchError(this.handleError)
+            );
+    }
+
     private handleError(error: HttpErrorResponse) {
         let errorMessage = 'An unexpected error occurred';
 

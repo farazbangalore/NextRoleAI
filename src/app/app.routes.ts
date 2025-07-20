@@ -10,7 +10,8 @@ export const routes: Routes = [
     { path: '', component: HomeComponent },
     { path: 'login', component: LoginComponent },
     { path: 'dashboard', component: DashboardComponent },
-    { path: 'applications', component: ApplicationLandingComponent },
-    { path: 'add-application', component: ApplicationComponent },
+    { path: 'applications-home', component: ApplicationLandingComponent },
+    { path: 'application/add', component: ApplicationComponent },
+    { path: 'application/:id', component: ApplicationComponent },
     { path: 'user-details', component: UserDetailsComponent },
 ];

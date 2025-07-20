@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JobApplicationRequest } from '../models/request/job-application.request';
 import { JobApplicationService } from '../services/job-application.service';
 import { ToastService } from '../services/toast.service';
@@ -14,6 +14,7 @@ import { ToastService } from '../services/toast.service';
 })
 export class ApplicationComponent implements OnInit {
   submitted = false;
+  mode: 'create' | 'view' | 'edit' = 'create';
 
   formData = {
     companyName: '',
@@ -28,35 +29,73 @@ export class ApplicationComponent implements OnInit {
   };
 
   apiCallInProgress: boolean = false;
+  applicationId: string | null = null; // Track loaded application
 
-  constructor(private router: Router,
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
     private jobApplicationService: JobApplicationService,
     private toastService: ToastService,
     private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
-    // Set default applied date to today
-    const today = new Date();
-    this.formData.appliedDate = today.toISOString().split('T')[0];
+    // Check route for application id
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.mode = 'view';
+        this.applicationId = id;
+        this.loadApplication(id);
+      } else {
+        this.mode = 'create';
+        const today = new Date();
+        this.formData.appliedDate = today.toISOString().split('T')[0];
+      }
+    });
+  }
+
+  loadApplication(id: string): void {
+    this.apiCallInProgress = true;
+    this.jobApplicationService.getJobApplicationById(id).subscribe({
+      next: (response) => {
+        if (response.status_code === 200) {
+          const jobApplication = response.data[0];
+          console.log('Loaded application:', jobApplication);
+          this.formData = {
+            companyName: jobApplication.company,
+            jobTitle: jobApplication.title,
+            referenceUrl: jobApplication.ref_url,
+            appliedDate: new Date().toISOString().split('T')[0],
+            status: jobApplication.status,
+            notes: jobApplication.notes,
+            jobDescription: jobApplication.job_description,
+            recruiterName: jobApplication.recruiter_info?.name,
+            recruiterEmail: jobApplication.recruiter_info?.email
+          };
+        }
+        this.apiCallInProgress = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.apiCallInProgress = false;
+        this.toastService.showError('Failed to load application', 2000);
+      }
+    });
   }
 
   onSubmit(): void {
     this.submitted = true;
-
-    // Validate required fields
     if (!this.isFormValid()) {
       this.toastService.showError('Some Fields are missing!', 2000);
       return;
     }
-
-    // Create application object
     const newApplication: JobApplicationRequest = {
       company: this.formData.companyName,
       title: this.formData.jobTitle,
       ref_url: this.formData.referenceUrl,
       status: this.formData.status,
-      applied_date: 123,
+      applied_date: Date.parse(this.formData.appliedDate),
       notes: this.formData.notes,
       job_description: this.formData.jobDescription,
       recruiter_info: {
@@ -65,9 +104,57 @@ export class ApplicationComponent implements OnInit {
         phone: ''
       }
     }
-
-    // Save application
     this.saveApplication(newApplication);
+  }
+
+  onUpdate(): void {
+    if (!this.isFormValid()) {
+      this.toastService.showError('Some Fields are missing!', 2000);
+      return;
+    }
+    const updatedApplication: JobApplicationRequest = {
+      company: this.formData.companyName,
+      title: this.formData.jobTitle,
+      ref_url: this.formData.referenceUrl,
+      status: this.formData.status,
+      applied_date: Date.parse(this.formData.appliedDate),
+      notes: this.formData.notes,
+      job_description: this.formData.jobDescription,
+      recruiter_info: {
+        name: this.formData.recruiterName,
+        email: this.formData.recruiterEmail,
+        phone: ''
+      }
+    }
+    this.apiCallInProgress = true;
+    this.jobApplicationService.updateJobApplication(this.applicationId!, updatedApplication).subscribe({
+      next: (response) => {
+        if (response.status_code === 200) {
+          this.toastService.showSuccess('Application updated successfully!', 2000);
+          this.mode = 'view';
+          this.apiCallInProgress = false;
+          this.cdr.markForCheck();
+        } else {
+          this.toastService.showError('Failed to update application', 2000);
+          this.apiCallInProgress = false;
+        }
+      },
+      error: () => {
+        this.toastService.showError('Failed to update application', 2000);
+        this.apiCallInProgress = false;
+      }
+    });
+  }
+
+  onEdit(): void {
+    this.mode = 'edit';
+  }
+
+  onCancelEdit(): void {
+    this.mode = 'view';
+    if (this.applicationId) {
+      this.loadApplication(this.applicationId);
+    }
   }
 
   saveDraft(): void {
@@ -177,6 +264,18 @@ export class ApplicationComponent implements OnInit {
     } catch {
       return false;
     }
+  }
+
+  isCreateMode(): boolean {
+    return this.mode === 'create';
+  }
+
+  isEditMode(): boolean {
+    return this.mode === 'edit';
+  }
+
+  isViewMode(): boolean {
+    return this.mode === 'view';
   }
 }
 

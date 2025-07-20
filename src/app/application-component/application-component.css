@@ -184,3 +184,10 @@ input[type="radio"] {
   font-weight: 600;
   margin-bottom: 1rem;
 }
+
+/* Button row styling */
+.button-row {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
