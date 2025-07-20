@@ -3,6 +3,8 @@ import { ChangeDetectorRef, Component } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+import { UserMetadata } from '../models/user_metadata';
 
 interface Application {
   id: string;
@@ -37,11 +39,12 @@ interface Interview {
 })
 
 export class DashboardComponent implements OnInit {
-  userName = 'John Doe';
-  userInitials = 'JD';
+  userName: any = 'Guest User';
+  currentUser: UserMetadata | null = null;
 
   constructor(
-    private router: Router  ) { }
+    private router: Router,
+    private authService: AuthService) { }
 
   stats = {
     activeApplications: 24,
@@ -174,6 +177,8 @@ export class DashboardComponent implements OnInit {
 
 
   ngOnInit(): void {
+    this.currentUser = this.authService.getCurrentUser();
+    this.userName = this.currentUser ? this.currentUser.first_name : 'Guest User';
     this.loadUserData();
   }
 
