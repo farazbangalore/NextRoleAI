@@ -2,18 +2,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, HostListener, ElementRef, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { UserMetadata } from '../models/user_metadata';
 
 
-
-
 @Component({
   selector: 'app-navigation-component',
-  imports: [ReactiveFormsModule, CommonModule, FormsModule],
+  imports: [ReactiveFormsModule, CommonModule, FormsModule, RouterModule],
   templateUrl: './navigation-component.html',
   styleUrl: './navigation-component.css'
 })

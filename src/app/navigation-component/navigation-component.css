@@ -10,6 +10,10 @@
   position: relative;
 }
 
+a:focus {
+  outline: none !important;
+}
+
 .nav-active::after {
   content: '';
   position: absolute;

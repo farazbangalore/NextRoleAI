@@ -16,12 +16,14 @@
         <ng-container *ngIf="isAuthenticated; else publicNav">
           <!-- Authenticated Navigation -->
           <a 
+            routerLink="/dashboard" 
             (click)="performNavigation('/dashboard')"
             routerLinkActive="nav-active"
             class="cursor-pointer nav-link text-slate-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">
             Dashboard
           </a>
           <a 
+              routerLink="/applications-home" 
              (click)="performNavigation('/applications-home')"
             routerLinkActive="nav-active"
             class="cursor-pointer nav-link text-slate-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">
