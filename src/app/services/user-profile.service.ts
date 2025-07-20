@@ -13,6 +13,18 @@ export interface Education {
     score: number;
 }
 
+export interface Certification {
+    id?: string;
+    name: string;
+    issuing_organization: string;
+    credential_url?: string;
+    issue_year: number;
+    issue_month: number;
+    expiry_year?: number;
+    expiry_month?: number;
+}
+
+
 export interface Experience {
     id?: string;
     company: string;
@@ -37,6 +49,7 @@ export interface UserProfile {
     education: Education[];
     experience: Experience[];
     skills?: Skills;
+    certifications: Certification[];
     achievements: string[];
     leetcode_url?: string;
     linkedin_url?: string;
@@ -198,6 +211,36 @@ export class UserProfileService {
                 technical_skills: ['JavaScript', 'TypeScript', 'React', 'Node.js', 'Python', 'AWS', 'Docker'],
                 soft_skills: ['Leadership', 'Communication', 'Problem Solving', 'Team Management']
             },
+            certifications: [
+                {
+                    id: '1',
+                    name: 'AWS Solutions Architect Associate',
+                    issuing_organization: 'Amazon Web Services',
+                    credential_url: 'https://aws.amazon.com/certification/certified-solutions-architect-associate/',
+                    issue_year: 2023,
+                    issue_month: 6,
+                    expiry_year: 2026,
+                    expiry_month: 6
+                },
+                {
+                    id: '2',
+                    name: 'Google Cloud Professional Developer',
+                    issuing_organization: 'Google Cloud',
+                    credential_url: 'https://cloud.google.com/certification/cloud-developer',
+                    issue_year: 2023,
+                    issue_month: 9,
+                    expiry_year: 2025,
+                    expiry_month: 9
+                },
+                {
+                    id: '3',
+                    name: 'Certified Kubernetes Administrator',
+                    issuing_organization: 'Cloud Native Computing Foundation',
+                    credential_url: 'https://www.cncf.io/certification/cka/',
+                    issue_year: 2024,
+                    issue_month: 1
+                }
+            ],
             achievements: [
                 'Winner of Google Code Jam 2023',
                 'Published 3 research papers on AI',

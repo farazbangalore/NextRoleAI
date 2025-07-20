@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { UserProfileService, UserProfile, Education, Experience, Skills } from '../services/user-profile.service';
+import { UserProfileService, UserProfile, Education, Experience, Skills, Certification } from '../services/user-profile.service';
 import { Subscription } from 'rxjs';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -14,6 +14,7 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
   profile: UserProfile | null = null;
   editableProfile: UserProfile = this.createEmptyProfile();
   isLoading = true;
+  isFetchingProfile = false;
   isEditing = false;
 
   private profileSubscription!: Subscription;
@@ -119,6 +120,23 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
     this.editableProfile.education.push(newEducation);
   }
 
+  addCertification(): void {
+    const newCertification: Certification = {
+      name: '',
+      issuing_organization: '',
+      credential_url: '',
+      issue_year: new Date().getFullYear(),
+      issue_month: 1,
+      expiry_year: undefined,
+      expiry_month: undefined
+    };
+    this.editableProfile.certifications.push(newCertification);
+  }
+
+  removeCertification(index: number): void {
+    this.editableProfile.certifications.splice(index, 1);
+  }
+
   removeEducation(index: number): void {
     this.editableProfile.education.splice(index, 1);
   }
@@ -200,6 +218,7 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
       education: [],
       experience: [],
       skills: { technical_skills: [], soft_skills: [] },
+      certifications: [],
       achievements: [],
       created_at: Date.now(),
       modified_at: Date.now()
