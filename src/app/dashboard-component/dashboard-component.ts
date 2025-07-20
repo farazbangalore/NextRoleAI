@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
@@ -41,8 +41,7 @@ export class DashboardComponent implements OnInit {
   userInitials = 'JD';
 
   constructor(
-    private router: Router,
-  ) { }
+    private router: Router  ) { }
 
   stats = {
     activeApplications: 24,

@@ -111,9 +111,9 @@ export class ApplicationComponent implements OnInit {
           this.resetForm();
           this.toastService.showSuccess('Application saved successfully!', 2000);
           console.log('Application saved:', response.data);
-          this.cdr.detectChanges();
           this.apiCallInProgress = false;
-          this.navigateToDashboard()
+          this.navigateToDashboard();
+          this.cdr.markForCheck();
         } else {
           console.error('Error saving application:', response.message);
           this.apiCallInProgress = false;
