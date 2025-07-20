@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { UserProfileService, UserProfile, Education, Experience, Skills } from '../services/user-profile.service';
 import { Subscription } from 'rxjs';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -22,7 +22,9 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  constructor(private userProfileService: UserProfileService) { }
+  constructor(private userProfileService: UserProfileService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     this.loadProfile();
@@ -42,6 +44,7 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
       this.profile = this.userProfileService.getMockProfile();
       this.editableProfile = this.deepClone(this.profile);
       this.isLoading = false;
+      this.cdr.markForCheck();
     }, 500);
 
     // Uncomment when API is ready:

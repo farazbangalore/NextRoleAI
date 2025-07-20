@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { JobApplicationDto } from '../models/dto/job-application.dto';
@@ -47,7 +47,8 @@ export class ApplicationLandingComponent implements OnInit, OnDestroy {
 
   constructor(
     private jobApplicationService: JobApplicationService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -70,6 +71,7 @@ export class ApplicationLandingComponent implements OnInit, OnDestroy {
           this.applyFilters();
           this.calculateStats();
           this.isLoading = false;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           console.error('Error loading applications:', error);
@@ -218,6 +220,9 @@ export class ApplicationLandingComponent implements OnInit, OnDestroy {
     this.router.navigate(['/applications', application.id, 'edit']);
   }
 
+  performNavigation(path: string): void {
+    this.router.navigate([path]);
+  }
 
   openUrl(url: string): void {
     window.open(url, '_blank');

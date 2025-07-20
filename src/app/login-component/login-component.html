@@ -21,12 +21,12 @@
             <div class="flex bg-slate-50 border-b border-slate-200">
                 <button (click)="toggleMode(true)"
                     [class]="isLoginMode ? 'bg-white text-blue-600 border-b-2 border-blue-600' : 'text-slate-600 hover:text-blue-600'"
-                    class="flex-1 py-4 px-6 text-sm font-medium transition-all duration-200">
+                    class="cursor-pointer flex-1 py-4 px-6 text-sm font-medium transition-all duration-200">
                     Sign In
                 </button>
                 <button (click)="toggleMode(false)"
                     [class]="!isLoginMode ? 'bg-white text-blue-600 border-b-2 border-blue-600' : 'text-slate-600 hover:text-blue-600'"
-                    class="flex-1 py-4 px-6 text-sm font-medium transition-all duration-200">
+                    class="cursor-pointer flex-1 py-4 px-6 text-sm font-medium transition-all duration-200">
                     Sign Up
                 </button>
             </div>
@@ -36,7 +36,7 @@
                 <!-- Social Login Buttons -->
                 <div class="space-y-3 mb-6">
                     <button (click)="handleGoogleLogin()"
-                        class="w-full flex items-center justify-center px-4 py-3 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-all duration-200 hover:shadow-md">
+                        class="cursor-pointer w-full flex items-center justify-center px-4 py-3 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-all duration-200 hover:shadow-md">
                         <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24">
                             <path fill="#4285F4"
                                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -51,7 +51,7 @@
                     </button>
 
                     <button
-                        class="w-full flex items-center justify-center px-4 py-3 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-all duration-200 hover:shadow-md">
+                        class="cursor-pointer w-full flex items-center justify-center px-4 py-3 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-all duration-200 hover:shadow-md">
                         <svg class="w-5 h-5 mr-3" fill="#0077B5" viewBox="0 0 24 24">
                             <path
                                 d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
@@ -148,7 +148,7 @@
                     <div *ngIf="isLoginMode" class="flex items-center justify-between">
                         <div class="flex items-center">
                             <input id="remember" name="remember" type="checkbox" [(ngModel)]="formData.remember"
-                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded">
+                                class="cursor-pointer h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded">
                             <label for="remember" class="ml-2 block text-sm text-slate-700">
                                 Remember me
                             </label>
@@ -171,17 +171,28 @@
 
                     <!-- Submit Button -->
                     <button type="submit"
-                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105">
-                        {{ isLoginMode ? 'Sign In' : 'Create Account' }}
+                        class="cursor-pointer w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105">
+                        <ng-container *ngIf="!isLoading; else loadingTpl">{{ isLoginMode ? 'Sign In' : 'Create Account' }}</ng-container>
+                        <ng-template #loadingTpl>
+                            <span class="flex items-center gap-2">
+                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                </svg>
+                                <span>Logging In...</span>
+                            </span>
+                        </ng-template>
+                    
                     </button>
-                </form>
+                    </form>
 
                 <!-- Footer Message -->
                 <div class="mt-6 text-center">
                     <p class="text-sm text-slate-600">
                         {{ isLoginMode ? "Don't have an account?" : "Already have an account?" }}
                         <button (click)="toggleMode(!isLoginMode)"
-                            class="font-medium text-blue-600 hover:text-blue-500 transition-colors ml-1">
+                            class="cursor-pointer font-medium text-blue-600 hover:text-blue-500 transition-colors ml-1">
                             {{ isLoginMode ? 'Sign up' : 'Sign in' }}
                         </button>
                     </p>

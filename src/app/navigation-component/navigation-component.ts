@@ -195,6 +195,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
 
   performNavigation(route: string): void {
     console.log(`Navigating to ${route}`);
+    this.isUserMenuOpen = false;
     this.router.navigate([route]);
   }
 }
