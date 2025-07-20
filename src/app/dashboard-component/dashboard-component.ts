@@ -5,6 +5,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { UserMetadata } from '../models/user_metadata';
+import { JobApplicationDto } from '../models/dto/job-application.dto';
+import { JobApplicationService } from '../services/job-application.service';
+import { ApiResponse } from '../models/api.response';
 
 interface Application {
   id: string;
@@ -41,87 +44,24 @@ interface Interview {
 export class DashboardComponent implements OnInit {
   userName: any = 'Guest User';
   currentUser: UserMetadata | null = null;
+  jobApplications: JobApplicationDto[] = [];
+  isApplicationFetching = false;
+  applicationStatusMap: { [key: string]: JobApplicationDto[] } = {};
 
   constructor(
     private router: Router,
-    private authService: AuthService) { }
+    private authService: AuthService,
+    private jobApplicationService: JobApplicationService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   stats = {
-    activeApplications: 24,
-    interviews: 8,
-    atsScore: 95,
-    responseRate: 32
+    activeApplications: 0,
+    interviews: 0,
+    atsScore: 0,
+    responseRate: 0
   };
 
-  applications = {
-    applied: [
-      {
-        id: '1',
-        position: 'Senior Frontend Developer',
-        company: 'TechCorp',
-        appliedDate: '2 days ago',
-        status: 'applied'
-      },
-      {
-        id: '2',
-        position: 'Full Stack Engineer',
-        company: 'StartupXYZ',
-        appliedDate: '1 week ago',
-        status: 'applied'
-      },
-      {
-        id: '3',
-        position: 'React Developer',
-        company: 'WebSolutions',
-        appliedDate: '3 days ago',
-        status: 'applied'
-      }
-    ] as Application[],
-    inReview: [
-      {
-        id: '4',
-        position: 'Software Engineer',
-        company: 'BigTech Inc',
-        appliedDate: '1 week ago',
-        status: 'inReview'
-      },
-      {
-        id: '5',
-        position: 'Frontend Lead',
-        company: 'DesignHub',
-        appliedDate: '5 days ago',
-        status: 'inReview'
-      }
-    ] as Application[],
-    interview: [
-      {
-        id: '6',
-        position: 'Senior Developer',
-        company: 'CloudTech',
-        appliedDate: '2 weeks ago',
-        interviewDate: 'Tomorrow',
-        status: 'interview'
-      },
-      {
-        id: '7',
-        position: 'Tech Lead',
-        company: 'InnovateNow',
-        appliedDate: '1 week ago',
-        interviewDate: 'Friday',
-        status: 'interview'
-      }
-    ] as Application[],
-    offer: [
-      {
-        id: '8',
-        position: 'Principal Engineer',
-        company: 'MegaCorp',
-        appliedDate: '3 weeks ago',
-        offerDate: 'Yesterday',
-        status: 'offer'
-      }
-    ] as Application[]
-  };
 
   recentActivity: Activity[] = [
     {
@@ -179,13 +119,44 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
     this.userName = this.currentUser ? this.currentUser.first_name : 'Guest User';
-    this.loadUserData();
+    this.loadJobApplications();
   }
 
-  loadUserData(): void {
-    // Simulate loading user data
-    // In real implementation, this would call your API service
+  loadJobApplications(): void {
+    this.isApplicationFetching = true;
     console.log('Loading user dashboard data...');
+    this.jobApplicationService.getJobApplications()
+      .subscribe({
+        next: (response: ApiResponse) => {
+          this.jobApplications = response.data as JobApplicationDto[];
+          this.isApplicationFetching = false;
+          this.buildApplicationStatusMap();
+          this.refreshStats();
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          console.error('Error loading applications:', error);
+          this.isApplicationFetching = false;
+        }
+      });
+  }
+
+  buildApplicationStatusMap(): void {
+    this.applicationStatusMap = this.jobApplications.reduce(
+      (acc, job) => {
+        if (!acc[job.status]) {
+          acc[job.status] = [];
+        }
+        acc[job.status].push(job);
+        return acc;
+      },
+      {} as Record<string, JobApplicationDto[]>
+    );
+  }
+
+  refreshStats(): void {
+    this.stats.activeApplications = this.jobApplications.length;
+    this.stats.interviews = this.applicationStatusMap['interview'] ? this.applicationStatusMap['interview'].length : 0;
   }
 
   addNewApplication(): void {
@@ -203,9 +174,9 @@ export class DashboardComponent implements OnInit {
     console.log('Navigate to job import');
   }
 
-  viewApplicationDetails(applicationId: string): void {
-    // Navigate to application details
-    console.log('View application details:', applicationId);
+    viewApplication(application: JobApplicationDto): void {
+      console.log('Viewing application:', application);
+    this.router.navigate([`/application/${application.id}`]);
   }
 
   viewInterviewDetails(interviewId: string): void {

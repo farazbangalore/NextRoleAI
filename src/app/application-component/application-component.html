@@ -2,7 +2,7 @@
   <!-- Main Content -->
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Header -->
-    <div class="mb-8">
+    <div class="mb-4">
       <div class="flex items-center space-x-4 mb-4">
         <button (click)="navigateToDashboard()"
           class="cursor-pointer flex items-center text-slate-600 hover:text-blue-600 transition-colors">
@@ -32,11 +32,11 @@
       <!-- Form Header -->
       <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-6">
         <h2 class="text-xl font-semibold text-white">Job Application Details</h2>
-        <p class="text-blue-100 mt-1">Fill in the information below to add this application to your pipeline</p>
+        <!-- <p class="text-blue-100 mt-1">Fill in the information below to add this application to your pipeline</p> -->
       </div>
 
       <!-- Form Content -->
-      <div class="px-8 py-8">
+      <div class="px-8 py-6">
         <form *ngIf="isCreateMode()" (ngSubmit)="onSubmit()" #applicationForm="ngForm" class="space-y-6">
           <!-- Company Name -->
           <div>
@@ -45,7 +45,7 @@
             </label>
             <input id="companyName" name="companyName" type="text" [(ngModel)]="formData.companyName"
               [disabled]="isViewMode()" required
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
               placeholder="e.g., Google, Microsoft, Amazon">
             <div *ngIf="submitted && !formData.companyName" class="text-red-500 text-sm mt-1">
               Company name is required
@@ -59,7 +59,7 @@
             </label>
             <input id="jobTitle" name="jobTitle" type="text" [(ngModel)]="formData.jobTitle" [disabled]="isViewMode()"
               required
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
               placeholder="e.g., Senior Frontend Developer, Full Stack Engineer">
             <div *ngIf="submitted && !formData.jobTitle" class="text-red-500 text-sm mt-1">
               Job title is required
@@ -73,7 +73,7 @@
             </label>
             <input id="referenceUrl" name="referenceUrl" type="url" [(ngModel)]="formData.referenceUrl"
               [disabled]="isViewMode()"
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
               placeholder="https://company.com/careers/job-id">
             <p class="text-sm text-slate-500 mt-1">
               Link to the job posting or application page
@@ -89,7 +89,7 @@
               </label>
               <input id="appliedDate" name="appliedDate" type="date" [(ngModel)]="formData.appliedDate"
                 [disabled]="isViewMode()" required
-                class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 ">
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 ">
               <div *ngIf="submitted && !formData.appliedDate" class="text-red-500 text-sm mt-1">
                 Applied date is required
               </div>
@@ -101,7 +101,7 @@
                 Application Status *
               </label>
               <select id="status" name="status" [(ngModel)]="formData.status" [disabled]="isViewMode()" required
-                class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black-600 focus:border-blue-300 transition-all duration-200 text-slate-900 appearance-none pr-10">
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black-600 focus:border-blue-300 transition-all duration-200 text-slate-900 appearance-none pr-10">
                 <option value="" disabled selected>Select Status</option>
                 <option value="applied">Applied</option>
                 <option value="inReview">In Review</option>
@@ -121,7 +121,7 @@
               Additional Notes
             </label>
             <textarea id="notes" name="notes" rows="4" [(ngModel)]="formData.notes" [disabled]="isViewMode()"
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 resize-none placeholder-gray-400"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 resize-none placeholder-gray-400"
               placeholder="Add any additional information about this application, interview details, or follow-up notes..."></textarea>
           </div>
 
@@ -132,7 +132,7 @@
             </label>
             <textarea id="jobDescription" name="jobDescription" rows="6" [(ngModel)]="formData.jobDescription"
               [disabled]="isViewMode()"
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-300 transition-all duration-200 text-slate-900 resize-none placeholder-gray-400"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-300 transition-all duration-200 text-slate-900 resize-none placeholder-gray-400"
               placeholder="Paste the job description here for better ATS analysis and resume optimization..."></textarea>
             <p class="text-sm text-slate-500 mt-1">
               This will help our AI analyze and optimize your resume for better ATS scoring
@@ -204,7 +204,7 @@
             </label>
             <input id="companyName" name="companyName" type="text" [(ngModel)]="formData.companyName"
               [disabled]="isViewMode()" required
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
               placeholder="e.g., Google, Microsoft, Amazon">
             <div *ngIf="submitted && !formData.companyName" class="text-red-500 text-sm mt-1">
               Company name is required
@@ -218,7 +218,7 @@
             </label>
             <input id="jobTitle" name="jobTitle" type="text" [(ngModel)]="formData.jobTitle" [disabled]="isViewMode()"
               required
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
               placeholder="e.g., Senior Frontend Developer, Full Stack Engineer">
             <div *ngIf="submitted && !formData.jobTitle" class="text-red-500 text-sm mt-1">
               Job title is required
@@ -232,7 +232,7 @@
             </label>
             <input id="referenceUrl" name="referenceUrl" type="url" [(ngModel)]="formData.referenceUrl"
               [disabled]="mode === 'view'"
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
               placeholder="https://company.com/careers/job-id">
             <p class="text-sm text-slate-500 mt-1">
               Link to the job posting or application page
@@ -248,7 +248,7 @@
               </label>
               <input id="appliedDate" name="appliedDate" type="date" [(ngModel)]="formData.appliedDate"
                 [disabled]="mode === 'view'" required
-                class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 ">
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 ">
               <div *ngIf="submitted && !formData.appliedDate" class="text-red-500 text-sm mt-1">
                 Applied date is required
               </div>
@@ -260,7 +260,7 @@
                 Application Status *
               </label>
               <select id="status" name="status" [(ngModel)]="formData.status" [disabled]="mode === 'view'" required
-                class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black-600 focus:border-blue-300 transition-all duration-200 text-slate-900 appearance-none pr-10">
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black-600 focus:border-blue-300 transition-all duration-200 text-slate-900 appearance-none pr-10">
                 <option value="" disabled selected>Select Status</option>
                 <option value="applied">Applied</option>
                 <option value="inReview">In Review</option>
@@ -280,7 +280,7 @@
               Additional Notes
             </label>
             <textarea id="notes" name="notes" rows="4" [(ngModel)]="formData.notes" [disabled]="mode === 'view'"
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 resize-none placeholder-gray-400"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 resize-none placeholder-gray-400"
               placeholder="Add any additional information about this application, interview details, or follow-up notes..."></textarea>
           </div>
 
@@ -291,7 +291,7 @@
             </label>
             <textarea id="jobDescription" name="jobDescription" rows="6" [(ngModel)]="formData.jobDescription"
               [disabled]="mode === 'view'"
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-300 transition-all duration-200 text-slate-900 resize-none placeholder-gray-400"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-300 transition-all duration-200 text-slate-900 resize-none placeholder-gray-400"
               placeholder="Paste the job description here for better ATS analysis and resume optimization..."></textarea>
             <p class="text-sm text-slate-500 mt-1">
               This will help our AI analyze and optimize your resume for better ATS scoring
