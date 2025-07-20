@@ -213,11 +213,7 @@ export class ApplicationLandingComponent implements OnInit, OnDestroy {
   }
 
   viewApplication(application: JobApplicationDto): void {
-    this.router.navigate(['/applications', application.id]);
-  }
-
-  editApplication(application: JobApplicationDto): void {
-    this.router.navigate(['/applications', application.id, 'edit']);
+    this.router.navigate([`/application/${application.id}`]);
   }
 
   openApplication(jobApplicationDto: JobApplicationDto): void {
