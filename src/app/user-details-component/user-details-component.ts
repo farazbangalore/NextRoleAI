@@ -9,6 +9,7 @@ import { Education } from '../models/util/education';
 import { Certification } from '../models/util/certification';
 import { Experience } from '../models/util/experience';
 import { ToastService } from '../services/toast.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-details-component',
@@ -32,8 +33,8 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
 
   constructor(private userProfileService: UserProfileService,
     private cdr: ChangeDetectorRef,
-    private toastService: ToastService
-  ) { }
+    private toastService: ToastService,
+    private router: Router) { }
 
   ngOnInit(): void {
     this.loadProfile();
@@ -75,7 +76,7 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
     this.editableProfile = this.deepClone(this.currentUserProfile!);
   }
 
-  saveProfile(): void {
+  updateProfile(): void {
     this.isUpdatingProfile = true;
     this.userProfileService.updateUserProfile(this.editableProfile).subscribe({
       next: (updatedProfile: ApiResponse) => {
@@ -83,13 +84,14 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
         this.isEditing = false;
         this.isUpdatingProfile = false;
         this.toastService.showSuccess('Profile updated successfully');
+        this.loadProfile();
         this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Error updating profile:', error);
         alert('Failed to update profile. Please try again.');
         this.isUpdatingProfile = false;
-
+        this.cdr.markForCheck();
       }
     });
   }
