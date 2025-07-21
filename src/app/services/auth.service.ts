@@ -26,7 +26,7 @@ export class AuthService {
     }
 
     public validateTokenOnAppLoad() {
-        if (typeof window === 'undefined') {
+        if (typeof window === 'undefined' || localStorage===undefined) {
             return;
         }
         const token = localStorage.getItem(AppConstants.JWT_TOKEN);
@@ -147,7 +147,7 @@ export class AuthService {
     }
 
     getCurrentUser(): UserMetadata | null {
-        if (typeof window === 'undefined') {
+        if (typeof window === 'undefined' || localStorage===undefined) {
             return null;
         }
 
