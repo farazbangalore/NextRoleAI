@@ -26,7 +26,7 @@ export class AuthService {
     }
 
     public validateTokenOnAppLoad() {
-        if (typeof window === 'undefined' || !localStorage) {
+        if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
             return;
         }
         const token = localStorage.getItem(AppConstants.JWT_TOKEN);
@@ -147,7 +147,7 @@ export class AuthService {
     }
 
     getCurrentUser(): UserMetadata | null {
-        if (typeof window === 'undefined' || !localStorage) {
+        if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
             return null;
         }
 
@@ -163,11 +163,11 @@ export class AuthService {
     }
 
     getToken(): string | null {
-        return typeof window !== 'undefined' ? localStorage.getItem(AppConstants.JWT_TOKEN) : null;
+        return (typeof window !== 'undefined' || typeof localStorage !== 'undefined')? localStorage.getItem(AppConstants.JWT_TOKEN) : null;
     }
 
     private setAuthData(token: string, user: UserMetadata): void {
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
             localStorage.setItem(AppConstants.JWT_TOKEN, token);
             localStorage.setItem(AppConstants.USER_METADATA, JSON.stringify(user));
             this.isAuthenticatedSubject.next(true);
@@ -176,7 +176,7 @@ export class AuthService {
     }
 
     private clearAuthData(): void {
-        if (typeof window !== 'undefined') {//DONOT COME HERE
+        if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {//DONOT COME HERE
             localStorage.removeItem(AppConstants.JWT_TOKEN);
             localStorage.removeItem(AppConstants.USER_METADATA);
         }
@@ -185,14 +185,14 @@ export class AuthService {
     }
 
     private hasToken(): boolean {
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
             return !!localStorage.getItem(AppConstants.JWT_TOKEN);
         }
         return false;
     }
 
     private getUserFromStorage(): UserMetadata | null {
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
             const userMetadata = localStorage.getItem(AppConstants.USER_METADATA);
             if (userMetadata) {
                 try {
