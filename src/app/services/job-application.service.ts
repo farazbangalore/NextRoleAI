@@ -5,13 +5,14 @@ import { Observable, throwError } from "rxjs";
 import { ApiResponse } from "../models/api.response";
 import { catchError, tap } from 'rxjs/operators';
 import { ToastService } from "./toast.service";
+import { environment } from "../../environments/environment";
 
 
 @Injectable({
     providedIn: 'root'
 })
 export class JobApplicationService {
-    private baseUrl = 'http://localhost:8000';
+    private baseUrl = environment.BASE_URL;
 
     constructor(private http: HttpClient) {
     }

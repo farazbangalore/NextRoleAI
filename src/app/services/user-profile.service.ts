@@ -5,6 +5,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { UserDetailsDto } from '../models/dto/user-details.dto';
 import { ApiResponse } from '../models/api.response';
 import { UserDetailsRequest } from '../models/request/user-details.request';
+import { environment } from '../../environments/environment';
 
 
 
@@ -12,7 +13,7 @@ import { UserDetailsRequest } from '../models/request/user-details.request';
     providedIn: 'root'
 })
 export class UserProfileService {
-    private baseUrl = 'http://127.0.0.1:8000';
+    private baseUrl = environment.BASE_URL;
 
     // BehaviorSubject to manage profile state
     private profileSubject = new BehaviorSubject<UserDetailsDto | null>(null);

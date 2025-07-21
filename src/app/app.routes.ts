@@ -5,6 +5,8 @@ import { DashboardComponent } from './dashboard-component/dashboard-component';
 import { ApplicationComponent } from './application-component/application-component';
 import { ApplicationLandingComponent } from './application-landing-component/application-landing-component';
 import { UserDetailsComponent } from './user-details-component/user-details-component';
+import { RenderMode, ServerRoute } from '@angular/ssr';
+
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },

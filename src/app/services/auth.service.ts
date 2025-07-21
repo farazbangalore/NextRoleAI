@@ -8,12 +8,13 @@ import { LoginRequest } from '../models/login.request';
 import { AuthResponse } from '../models/auth.response';
 import { ApiResponse } from '../models/api.response';
 import { UserMetadata } from '../models/user_metadata';
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-    private baseUrl = 'http://localhost:8000';
+    private baseUrl = environment.BASE_URL;
 
     private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
     public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
