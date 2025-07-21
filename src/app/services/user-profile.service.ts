@@ -21,9 +21,9 @@ export class UserProfileService {
     constructor(private http: HttpClient) { }
 
     // Get user profile
-    getUserProfile(): Observable<ApiResponse> {
+    getUserDetails(): Observable<ApiResponse> {
 
-        return this.http.get<ApiResponse>(`${this.baseUrl}/users/user-profile`)
+        return this.http.get<ApiResponse>(`${this.baseUrl}/users/user-details`)
             .pipe(
                 tap(response => {
                     console.log('Fetched User Details:', response.data);

@@ -49,7 +49,7 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
   loadProfile(): void {
     this.isLoading = true;
     this.isFetchingProfile = true;
-    this.userProfileService.getUserProfile()
+    this.userProfileService.getUserDetails()
       .subscribe({
         next: (response: ApiResponse) => {
           this.currentUserProfile = response.data as UserDetailsDto;
