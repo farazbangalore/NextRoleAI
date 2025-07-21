@@ -76,6 +76,22 @@ export class JobApplicationService {
             );
     }
 
+    updateJobApplicationStatus(id: string, status: string): Observable<ApiResponse> {
+        const headers = new HttpHeaders({
+            'Content-Type': 'application/json'
+        });
+        return this.http.put<ApiResponse>(`${this.baseUrl}/job-application/${id}/${status}`, { headers })
+            .pipe(
+                tap(response => {
+                    if (response.status_code == 200) {
+                        console.log('Application Status updated successfully:', response.data);
+                    }
+                }),
+                catchError(this.handleError)
+            );
+    }
+
+
     private handleError(error: HttpErrorResponse) {
         let errorMessage = 'An unexpected error occurred';
 

@@ -108,19 +108,24 @@
             </button>
           </div>
 
-          <!-- Kanban Board -->
+          <!-- Kanban Board Grid -->
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
             <!-- Applied Column -->
-            <div class="bg-slate-50 rounded-lg p-4">
+            <div class="bg-slate-50 rounded-lg p-4" cdkDropList cdkDropList id="appliedContainer"
+              [cdkDropListData]="applicationStatusMap['applied']"
+              [cdkDropListConnectedTo]="['inReviewContainer', 'interviewContainer', 'offerContainer']"
+              (cdkDropListDropped)="onCardDrop($event, 'applied')">
               <div class="flex items-center justify-between mb-4">
                 <h3 class="font-medium text-slate-900">Applied</h3>
-                <span class="bg-slate-200 text-slate-700 text-xs px-2 py-1 rounded-full">{{
-                  applicationStatusMap['applied']==null?0:applicationStatusMap['applied'].length}}</span>
+                <span class="bg-slate-200 text-slate-700 text-xs px-2 py-1 rounded-full">
+                  {{ applicationStatusMap['applied']==null?0:applicationStatusMap['applied'].length}}
+                </span>
               </div>
               <div class="space-y-3">
                 <div *ngFor="let app of applicationStatusMap['applied']"
-                  class="bg-white rounded-lg p-4 shadow-sm border border-slate-200 cursor-pointer hover:shadow-md transition-shadow"
-                  (click)="viewApplication(app)" >
+                  class="bg-white rounded-lg p-4 shadow-sm border border-slate-200 cursor-move hover:shadow-md transition-shadow"
+                  cdkDrag>
                   <h4 class="font-medium text-slate-900 mb-1">{{ app.title }}</h4>
                   <p class="text-sm text-slate-600 mb-2">{{ app.company }}</p>
                   <div class="flex items-center justify-between">
@@ -129,19 +134,29 @@
                   </div>
                 </div>
               </div>
+              <div *ngIf="isApplicationStatusUpdating && currentContainerUnderDrop=='appliedContainer'"
+                class="p-8 text-center">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                <p class="text-slate-600 mt-2">Moving...</p>
+              </div>
             </div>
 
             <!-- In Review Column -->
-            <div class="bg-blue-50 rounded-lg p-4">
+            <div class="bg-blue-50 rounded-lg p-4" cdkDropList id="inReviewContainer"
+              [cdkDropListData]="applicationStatusMap['inReview']"
+              [cdkDropListConnectedTo]="['appliedContainer', 'interviewContainer', 'offerContainer']"
+              (cdkDropListDropped)="onCardDrop($event, 'inReview')">
               <div class="flex items-center justify-between mb-4">
                 <h3 class="font-medium text-slate-900">In Review</h3>
-                <span class="bg-blue-200 text-blue-700 text-xs px-2 py-1 rounded-full">{{
-                  applicationStatusMap['inReview']==null?0:applicationStatusMap['inReview'].length}}</span>
+                <span class="bg-blue-200 text-blue-700 text-xs px-2 py-1 rounded-full">
+                  {{
+                  applicationStatusMap['inReview']==null?0:applicationStatusMap['inReview'].length}}
+                </span>
               </div>
               <div class="space-y-3">
                 <div *ngFor="let app of applicationStatusMap['inReview']"
-                  class="bg-white rounded-lg p-4 shadow-sm border border-blue-200 cursor-pointer hover:shadow-md transition-shadow"
-                   (click)="viewApplication(app)" >
+                  class="bg-white rounded-lg p-4 shadow-sm border border-blue-200 cursor-move hover:shadow-md transition-shadow"
+                  cdkDrag>
                   <h4 class="font-medium text-slate-900 mb-1">{{ app.title }}</h4>
                   <p class="text-sm text-slate-600 mb-2">{{ app.company }}</p>
                   <div class="flex items-center justify-between">
@@ -150,19 +165,29 @@
                   </div>
                 </div>
               </div>
+              <div *ngIf="isApplicationStatusUpdating  && currentContainerUnderDrop=='inReviewContainer'"
+                class="p-8 text-center">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                <p class="text-slate-600 mt-2">Moving...</p>
+              </div>
             </div>
 
             <!-- Interview Column -->
-            <div class="bg-yellow-50 rounded-lg p-4">
+            <div class="bg-yellow-50 rounded-lg p-4" cdkDropList id="interviewContainer"
+              [cdkDropListData]="applicationStatusMap['interview']"
+              [cdkDropListConnectedTo]="['appliedContainer', 'inReviewContainer', 'offerContainer']"
+              (cdkDropListDropped)="onCardDrop($event, 'interview')">
               <div class="flex items-center justify-between mb-4">
                 <h3 class="font-medium text-slate-900">Interview</h3>
-                <span class="bg-yellow-200 text-yellow-700 text-xs px-2 py-1 rounded-full">{{
-                  applicationStatusMap['interview']==null?0:applicationStatusMap['interview'].length}}</span>
+                <span class="bg-yellow-200 text-yellow-700 text-xs px-2 py-1 rounded-full">
+                  {{
+                  applicationStatusMap['interview']==null?0:applicationStatusMap['interview'].length}}
+                </span>
               </div>
               <div class="space-y-3">
                 <div *ngFor="let app of applicationStatusMap['interview']"
-                  class="bg-white rounded-lg p-4 shadow-sm border border-yellow-200 cursor-pointer hover:shadow-md transition-shadow"
-                   (click)="viewApplication(app)" >
+                  class="bg-white rounded-lg p-4 shadow-sm border border-yellow-200 cursor-move hover:shadow-md transition-shadow"
+                  cdkDrag>
                   <h4 class="font-medium text-slate-900 mb-1">{{ app.title }}</h4>
                   <p class="text-sm text-slate-600 mb-2">{{ app.company }}</p>
                   <div class="flex items-center justify-between">
@@ -171,19 +196,29 @@
                   </div>
                 </div>
               </div>
+              <div *ngIf="isApplicationStatusUpdating   && currentContainerUnderDrop=='interviewContainer'"
+                class="p-8 text-center">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                <p class="text-slate-600 mt-2">Moving...</p>
+              </div>
             </div>
 
             <!-- Offer Column -->
-            <div class="bg-green-50 rounded-lg p-4">
+            <div class="bg-green-50 rounded-lg p-4" cdkDropList id="offerContainer"
+              [cdkDropListData]="applicationStatusMap['offer']"
+              [cdkDropListConnectedTo]="['appliedContainer', 'inReviewContainer', 'interviewContainer']"
+              (cdkDropListDropped)="onCardDrop($event, 'offer')">
               <div class="flex items-center justify-between mb-4">
                 <h3 class="font-medium text-slate-900">Offer</h3>
-                <span class="bg-green-200 text-green-700 text-xs px-2 py-1 rounded-full">{{
-                  applicationStatusMap['offer']==null?0:applicationStatusMap['offer'].length}}</span>
+                <span class="bg-green-200 text-green-700 text-xs px-2 py-1 rounded-full">
+                  {{
+                  applicationStatusMap['offer']==null?0:applicationStatusMap['offer'].length}}
+                </span>
               </div>
               <div class="space-y-3">
                 <div *ngFor="let app of applicationStatusMap['offer']"
-                  class="bg-white rounded-lg p-4 shadow-sm border border-green-200 cursor-pointer hover:shadow-md transition-shadow"
-                   (click)="viewApplication(app)" >
+                  class="bg-white rounded-lg p-4 shadow-sm border border-green-200 cursor-move hover:shadow-md transition-shadow"
+                  cdkDrag>
                   <h4 class="font-medium text-slate-900 mb-1">{{ app.title }}</h4>
                   <p class="text-sm text-slate-600 mb-2">{{ app.company }}</p>
                   <div class="flex items-center justify-between">
@@ -192,10 +227,16 @@
                   </div>
                 </div>
               </div>
+              <div *ngIf="isApplicationStatusUpdating   && currentContainerUnderDrop=='offerContainer'"
+                class="p-8 text-center">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                <p class="text-slate-600 mt-2">Moving...</p>
+              </div>
             </div>
           </div>
+
           <!-- Loading State -->
-          <div *ngIf="isApplicationFetching" class="p-8 text-center">
+          <div *ngIf="isApplicationFetching && isApplicationStatusMapEmpty()" class="p-8 text-center">
             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
             <p class="text-slate-600 mt-2">Loading applications...</p>
           </div>

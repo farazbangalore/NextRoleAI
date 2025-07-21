@@ -1,13 +1,16 @@
+import { CdkDragDrop, DragDropModule, transferArrayItem } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component } from '@angular/core';
-import { OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router, NavigationEnd } from '@angular/router';
-import { AuthService } from '../services/auth.service';
-import { UserMetadata } from '../models/user_metadata';
-import { JobApplicationDto } from '../models/dto/job-application.dto';
-import { JobApplicationService } from '../services/job-application.service';
+import { Router } from '@angular/router';
 import { ApiResponse } from '../models/api.response';
+import { JobApplicationDto } from '../models/dto/job-application.dto';
+import { UserMetadata } from '../models/user_metadata';
+import { AuthService } from '../services/auth.service';
+import { JobApplicationService } from '../services/job-application.service';
+import { ToastService } from '../services/toast.service';
+import e from 'express';
+
 
 interface Application {
   id: string;
@@ -36,7 +39,7 @@ interface Interview {
 
 @Component({
   selector: 'app-dashboard-component',
-  imports: [ReactiveFormsModule, CommonModule, FormsModule],
+  imports: [ReactiveFormsModule, CommonModule, FormsModule, DragDropModule],
   templateUrl: './dashboard-component.html',
   styleUrl: './dashboard-component.css'
 })
@@ -46,13 +49,16 @@ export class DashboardComponent implements OnInit {
   currentUser: UserMetadata | null = null;
   jobApplications: JobApplicationDto[] = [];
   isApplicationFetching = false;
+  isApplicationStatusUpdating = false;
   applicationStatusMap: { [key: string]: JobApplicationDto[] } = {};
+  currentContainerUnderDrop: string | null = null;
 
   constructor(
     private router: Router,
     private authService: AuthService,
     private jobApplicationService: JobApplicationService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toastService: ToastService
   ) { }
 
   stats = {
@@ -174,8 +180,8 @@ export class DashboardComponent implements OnInit {
     console.log('Navigate to job import');
   }
 
-    viewApplication(application: JobApplicationDto): void {
-      console.log('Viewing application:', application);
+  viewApplication(application: JobApplicationDto): void {
+    console.log('Viewing application:', application);
     this.router.navigate([`/application/${application.id}`]);
   }
 
@@ -188,5 +194,58 @@ export class DashboardComponent implements OnInit {
     console.log(`Navigating to ${route}`);
     this.router.navigate([route]);
     // Implement navigation logic here, e.g., using Angular Router
+  }
+
+
+  onCardDrop(event: CdkDragDrop<any[]>, targetStatus: string) {
+    this.currentContainerUnderDrop = event.container.id;
+
+    if (event.container.id == event.previousContainer.id) {
+      return;
+    }
+    const applicationId = event.previousContainer.data[event.previousIndex].id
+    // Remove from old and add to new
+    if (event.previousContainer.data == undefined) {
+      event.previousContainer.data = [];
+    }
+    if (event.container.data == undefined) {
+      event.container.data = [];
+    }
+    transferArrayItem(
+      event.previousContainer.data,
+      event.container.data,
+      event.previousIndex,
+      event.currentIndex
+    );
+    // Call your backend update method
+    this.updateApplicationStatus(applicationId, targetStatus);
+  }
+
+  updateApplicationStatus(applicationId: string, newStatus: string) {
+    this.isApplicationStatusUpdating = true;
+    this.jobApplicationService.updateJobApplicationStatus(applicationId, newStatus)
+      .subscribe({
+        next: (response: ApiResponse) => {
+          this.jobApplications = response.data as JobApplicationDto[];
+          this.isApplicationFetching = false;
+          this.loadJobApplications()
+          this.isApplicationStatusUpdating = false;
+          this.toastService.showSuccess(`Application moved Successfully`);
+          this.currentContainerUnderDrop = null;
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          console.error('Error loading applications:', error);
+          this.isApplicationFetching = false;
+          this.isApplicationStatusUpdating = false;
+          this.currentContainerUnderDrop = null;
+          this.cdr.markForCheck();
+
+        }
+      });
+  }
+
+  isApplicationStatusMapEmpty(): boolean {
+    return Object.keys(this.applicationStatusMap).length === 0;
   }
 }
