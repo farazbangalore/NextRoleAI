@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -7,6 +7,7 @@ import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { LoginRequest } from '../models/login.request';
 import { SignupRequest } from '../models/signup.request';
+import { ToastService } from '../services/toast.service';
 
 
 @Component({
@@ -33,7 +34,9 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   toggleMode(isLogin: boolean) {
@@ -75,21 +78,23 @@ export class LoginComponent {
       next: (response) => {
         this.isLoading = false;
         if (response.status_code == 200) {
-          this.showSuccess('Login successful!');
-          this.router.navigate(['/']);
+          this.router.navigate(['/dashboard']);
         } else {
-          this.showError(response.message);
+          this.isLoading = false;
+          this.showError(response.message || 'Login failed');
+          this.toastService.showError(response.data?.message || 'Login failed', 2000);
+          this.cdr.markForCheck();
         }
       },
       error: (error) => {
         this.isLoading = false;
-        this.showError(error);
+        this.toastService.showError(error.error.data || 'Signup failed', 2000);
+        this.cdr.markForCheck(); // Ensure the view updates with the error message
       }
     });
   }
 
   handleSignUp() {
-    console.log('Validation:', this.validateSignupForm());
     if (!this.validateSignupForm()) {
       return;
     }
@@ -105,16 +110,21 @@ export class LoginComponent {
     this.authService.signup(signupData).subscribe({
       next: (response) => {
         this.isLoading = false;
-        if (response.success) {
+        if (response.status_code == 200) {
+          this.toastService.showSuccess('Signup successful!');
           this.showSuccess('Account created successfully!');
           this.router.navigate(['/dashboard']);
         } else {
+          this.isLoading = false;
           this.showError(response.message || 'Signup failed');
+          this.toastService.showError(response.data?.message || 'Signup failed');
+          this.cdr.markForCheck(); // Ensure the view updates with the error message
         }
       },
       error: (error) => {
         this.isLoading = false;
-        this.showError(error);
+        this.toastService.showError(error.error.data || 'Signup failed');
+        this.cdr.markForCheck(); // Ensure the view updates with the error message
       }
     });
   }
@@ -125,12 +135,7 @@ export class LoginComponent {
 
     this.authService.googleLogin().subscribe({
       next: (response) => {
-        this.isLoading = false;
-        if (response.success) {
-          this.router.navigate(['/dashboard']);
-        } else {
-          this.showError(response.message || 'Google login failed');
-        }
+
       },
       error: (error) => {
         this.isLoading = false;
@@ -145,12 +150,7 @@ export class LoginComponent {
 
     this.authService.linkedinLogin().subscribe({
       next: (response) => {
-        this.isLoading = false;
-        if (response.success) {
-          this.router.navigate(['/dashboard']);
-        } else {
-          this.showError(response.message || 'LinkedIn login failed');
-        }
+
       },
       error: (error) => {
         this.isLoading = false;
@@ -209,9 +209,7 @@ export class LoginComponent {
 
   private showError(message: string) {
     this.errorMessage = message;
-    setTimeout(() => {
-      this.clearError();
-    }, 5000);
+    this.toastService.showError(message, 2000);
   }
 
   private showSuccess(message: string) {

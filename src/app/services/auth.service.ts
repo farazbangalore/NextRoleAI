@@ -5,7 +5,6 @@ import { catchError, tap } from 'rxjs/operators';
 import { AppConstants } from '../constants';
 import { SignupRequest } from '../models/signup.request';
 import { LoginRequest } from '../models/login.request';
-import { AuthResponse } from '../models/auth.response';
 import { ApiResponse } from '../models/api.response';
 import { UserMetadata } from '../models/user_metadata';
 import { environment } from '../../environments/environment';
@@ -62,20 +61,27 @@ export class AuthService {
         ).subscribe();
     }
 
-    signup(signupData: SignupRequest): Observable<AuthResponse> {
+    signup(signupData: SignupRequest): Observable<ApiResponse> {
         console.log('Signup Service:', signupData);
         const headers = new HttpHeaders({
             'Content-Type': 'application/json'
         });
 
-        return this.http.post<AuthResponse>(`${this.baseUrl}/users/signup`, signupData, { headers })
+        return this.http.post<ApiResponse>(`${this.baseUrl}/users/signup`, signupData, { headers })
             .pipe(
                 tap(response => {
-                    if (response.success && response.token && response.user) {
-                        this.setAuthData(response.token, response.user);
+                    if (response.status_code === 200) {
+                        const userData: UserMetadata = {
+                            id: response.data.user.id,
+                            email: response.data.user.user_metadata.email,
+                            first_name: response.data.user.user_metadata.first_name,
+                            last_name: response.data.user.user_metadata.last_name || '',
+                            avatar: response.data.user.avatar || ''
+                        }
+                        this.setAuthData(response.data.session.access_token, userData);
                     }
                 }),
-                catchError(this.handleError)
+                // catchError(this.handleError)
             );
     }
 
@@ -97,30 +103,26 @@ export class AuthService {
                         this.setAuthData(response.data.session.access_token, userData);
                     }
                 }),
-                catchError(this.handleError)
+                // catchError(this.handleError)
             );
     }
 
     // Social login methods
-    googleLogin(): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(`${this.baseUrl}/auth/google`, {})
+    googleLogin(): Observable<ApiResponse> {
+        return this.http.post<ApiResponse>(`${this.baseUrl}/auth/google`, {})
             .pipe(
                 tap(response => {
-                    if (response.success && response.token && response.user) {
-                        this.setAuthData(response.token, response.user);
-                    }
+                   
                 }),
                 catchError(this.handleError)
             );
     }
 
-    linkedinLogin(): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(`${this.baseUrl}/auth/linkedin`, {})
+    linkedinLogin(): Observable<ApiResponse> {
+        return this.http.post<ApiResponse>(`${this.baseUrl}/auth/linkedin`, {})
             .pipe(
                 tap(response => {
-                    if (response.success && response.token && response.user) {
-                        this.setAuthData(response.token, response.user);
-                    }
+                  
                 }),
                 catchError(this.handleError)
             );
@@ -163,7 +165,7 @@ export class AuthService {
     }
 
     getToken(): string | null {
-        return (typeof window !== 'undefined' || typeof localStorage !== 'undefined')? localStorage.getItem(AppConstants.JWT_TOKEN) : null;
+        return (typeof window !== 'undefined' || typeof localStorage !== 'undefined') ? localStorage.getItem(AppConstants.JWT_TOKEN) : null;
     }
 
     private setAuthData(token: string, user: UserMetadata): void {

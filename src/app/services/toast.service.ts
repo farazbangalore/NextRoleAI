@@ -47,19 +47,19 @@ export class ToastService {
 
     // Convenience methods
     showSuccess(message: string, duration?: number) {
-        this.showToast(message, 'success', duration);
+        this.showToast(message, 'success', duration? duration : 2000);
     }
 
     showError(message: string, duration?: number) {
-        this.showToast(message, 'error', duration);
+        this.showToast(message, 'error', duration? duration : 2000);
     }
 
     showInfo(message: string, duration?: number) {
-        this.showToast(message, 'info', duration);
+        this.showToast(message, 'info', duration? duration : 2000);
     }
 
     showWarning(message: string, duration?: number) {
-        this.showToast(message, 'warning', duration);
+        this.showToast(message, 'warning', duration? duration : 2000);
     }
 
     clearAll() {
