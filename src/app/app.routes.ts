@@ -6,6 +6,7 @@ import { ApplicationComponent } from './application-component/application-compon
 import { ApplicationLandingComponent } from './application-landing-component/application-landing-component';
 import { UserDetailsComponent } from './user-details-component/user-details-component';
 import { RenderMode, ServerRoute } from '@angular/ssr';
+import { AuthCallbackComponent } from './auth-callback-component/auth-callback-component';
 
 
 export const routes: Routes = [
@@ -16,4 +17,5 @@ export const routes: Routes = [
     { path: 'application/add', component: ApplicationComponent },
     { path: 'application/:id', component: ApplicationComponent },
     { path: 'user-details', component: UserDetailsComponent },
+    { path: 'auth/callback', component: AuthCallbackComponent },
 ];

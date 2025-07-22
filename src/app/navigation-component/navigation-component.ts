@@ -39,6 +39,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initializeAuthState();
     this.subscribeToRouterEvents();
+    this.subscribeToUserChanges();
   }
 
   ngOnDestroy(): void {
@@ -149,6 +150,19 @@ export class NavigationComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  private subscribeToUserChanges(): void {
+    this.authService.currentUser$.subscribe(currentUser => {
+      console.log('User changed:', currentUser);
+      this.currentUser = currentUser
+      console.log('Current user:', this.currentUser);
+      if (this.currentUser) {
+        this.isAuthenticated = true;
+      }
+      console.log('Is authenticated:', this.isAuthenticated);
+    });
+  }
+
 
   // Router event handling
   private subscribeToRouterEvents(): void {

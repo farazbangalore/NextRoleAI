@@ -8,6 +8,8 @@ import { Router } from '@angular/router';
 import { LoginRequest } from '../models/login.request';
 import { SignupRequest } from '../models/signup.request';
 import { ToastService } from '../services/toast.service';
+import { createClient } from '@supabase/supabase-js';
+import { environment } from '../../environments/environment';
 
 
 @Component({
@@ -21,6 +23,8 @@ export class LoginComponent {
   showPassword = false;
   isLoading = false;
   errorMessage = '';
+  supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+
 
   formData = {
     firstName: '',
@@ -130,18 +134,12 @@ export class LoginComponent {
   }
 
   handleGoogleLogin() {
-    this.isLoading = true;
-    this.clearError();
-
-    this.authService.googleLogin().subscribe({
-      next: (response) => {
-
-      },
-      error: (error) => {
-        this.isLoading = false;
-        this.showError(error);
+    this.supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: 'http://localhost:4200/auth/callback'
       }
-    });
+    })
   }
 
   handleLinkedInLogin() {

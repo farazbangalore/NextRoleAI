@@ -123,6 +123,7 @@ export class DashboardComponent implements OnInit {
 
 
   ngOnInit(): void {
+  
     this.cdr.markForCheck();
     this.currentUser = this.authService.getCurrentUser();
     this.userName = this.currentUser ? this.currentUser.first_name : 'Guest User';
