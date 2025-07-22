@@ -24,17 +24,21 @@ export class ConfirmationDialogComponent implements OnInit, OnDestroy {
     // Handle escape key
     this.subscription.add(
       this.dialogVisible$.subscribe(visible => {
-        if (visible) {
-          document.body.style.overflow = 'hidden';
-        } else {
-          document.body.style.overflow = 'auto';
+        if (typeof document !== 'undefined') {
+          if (visible) {
+            document.body.style.overflow = 'hidden';
+          } else {
+            document.body.style.overflow = 'auto';
+          }
         }
       })
     );
   }
 
   ngOnDestroy(): void {
-    document.body.style.overflow = 'auto';
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'auto';
+    }
     this.subscription.unsubscribe();
   }
 
