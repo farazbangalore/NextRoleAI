@@ -188,13 +188,13 @@
 
         <ng-template #authButtons>
           <!-- Authentication Buttons -->
-          <button 
+          <!-- <button 
             (click)="login()"
             class="cursor-pointer text-slate-600 hover:text-blue-600 px-4 py-2 text-sm font-medium transition-colors">
             Sign In
-          </button>
+          </button> -->
           <button 
-            routerLink="/signup"
+            (click)="login()"
             class="cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105">
             Get Started
           </button>
@@ -310,14 +310,14 @@
           
           <!-- Mobile Auth Buttons -->
           <div class="border-t border-slate-200 mt-4 pt-4 space-y-2">
-            <button 
+            <!-- <button 
               routerLink="/login"
               (click)="closeMobileMenu()"
               class="block w-full px-3 py-2 text-center text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100 rounded-md transition-colors">
               Sign In
-            </button>
+            </button> -->
             <button 
-              routerLink="/signup"
+              routerLink="/login"
               (click)="closeMobileMenu()"
               class="block w-full px-3 py-2 text-center text-base font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-md transition-all">
               Get Started

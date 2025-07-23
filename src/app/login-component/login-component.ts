@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -18,7 +18,7 @@ import { environment } from '../../environments/environment';
   templateUrl: './login-component.html',
   styleUrl: './login-component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   isLoginMode = true;
   showPassword = false;
   isLoading = false;
@@ -42,6 +42,12 @@ export class LoginComponent {
     private toastService: ToastService,
     private cdr: ChangeDetectorRef
   ) { }
+
+  ngOnInit() {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/dashboard']);
+    }
+  }
 
   toggleMode(isLogin: boolean) {
     this.isLoginMode = isLogin;

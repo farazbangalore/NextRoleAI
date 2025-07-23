@@ -229,6 +229,11 @@ export class AuthService {
         });
     }
 
+    isLoggedIn(): boolean {
+        const token = this.getToken();
+        return !!token && !this.isTokenExpired();
+    }
+
     private handleError(error: HttpErrorResponse) {
         let errorMessage = 'An unexpected error occurred';
 
