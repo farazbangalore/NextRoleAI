@@ -241,4 +241,8 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
   private deepClone(obj: any): any {
     return JSON.parse(JSON.stringify(obj));
   }
+
+  trackByIndex(index: number, item: any): any {
+    return index;
+  }
 }
