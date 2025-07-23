@@ -184,7 +184,7 @@
             Work Experience
           </h2>
           <button *ngIf="isEditing" (click)="addExperience()"
-            class="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg transition-colors text-sm font-medium">
+            class="cursor-pointer bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg transition-colors text-sm font-medium">
             <svg class="w-4 h-4 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
@@ -225,7 +225,7 @@
                   <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Start Month</label>
                     <select [(ngModel)]="exp.start_month"
-                      class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm">
+                      class="cursor-pointer w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm">
                       <option value="1">Jan</option>
                       <option value="2">Feb</option>
                       <option value="3">Mar</option>
@@ -250,7 +250,7 @@
                   <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">End Month</label>
                     <select [(ngModel)]="exp.end_month"
-                      class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm">
+                      class="cursor-pointer w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm">
                       <option [value]="null">Current</option>
                       <option value="1">Jan</option>
                       <option value="2">Feb</option>
@@ -275,7 +275,7 @@
                     <input [(ngModel)]="exp.Summary[j]" type="text" placeholder="Describe your responsibilities..."
                       class="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm">
                     <button (click)="removeSummaryPoint(i, j)"
-                      class="text-red-600 hover:text-red-700 p-1.5 hover:bg-red-50 rounded-lg transition-colors">
+                      class="cursor-pointer text-red-600 hover:text-red-700 p-1.5 hover:bg-red-50 rounded-lg transition-colors">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
@@ -284,13 +284,13 @@
                     </button>
                   </div>
                   <button (click)="addSummaryPoint(i)"
-                    class="text-blue-600 hover:text-blue-700 text-sm font-medium hover:bg-blue-50 px-2 py-1 rounded-lg transition-colors">+
+                    class="cursor-pointer text-blue-600 hover:text-blue-700 text-sm font-medium hover:bg-blue-50 px-2 py-1 rounded-lg transition-colors">+
                     Add Point</button>
                 </div>
               </div>
               <div class="flex justify-end">
                 <button (click)="removeExperience(i)"
-                  class="text-red-600 hover:text-red-700 px-3 py-1.5 text-sm font-medium hover:bg-red-50 rounded-lg transition-colors">Remove
+                  class="cursor-pointer text-red-600 hover:text-red-700 px-3 py-1.5 text-sm font-medium hover:bg-red-50 rounded-lg transition-colors">Remove
                   Experience</button>
               </div>
             </div>
