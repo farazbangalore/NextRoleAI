@@ -5,7 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { JobApplicationRequest } from '../models/request/job-application.request';
 import { JobApplicationService } from '../services/job-application.service';
 import { ToastService } from '../services/toast.service';
-import { ConfirmationDialogService } from '../services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-application-component',
@@ -16,12 +15,13 @@ import { ConfirmationDialogService } from '../services/confirmation-dialog.servi
 export class ApplicationComponent implements OnInit {
   submitted = false;
   mode: 'create' | 'view' | 'edit' = 'create';
+  appliedDateInEpoch: number = 0;
 
   formData = {
     companyName: '',
     jobTitle: '',
     referenceUrl: '',
-    appliedDate: '',
+    appliedDate: new Date().toISOString().split('T')[0],
     status: '',
     notes: '',
     jobDescription: '',
@@ -70,7 +70,7 @@ export class ApplicationComponent implements OnInit {
             companyName: jobApplication.company,
             jobTitle: jobApplication.title,
             referenceUrl: jobApplication.ref_url,
-            appliedDate: new Date().toISOString().split('T')[0],
+            appliedDate: this.getAppliedDateForDisplay(jobApplication.applied_date),
             status: jobApplication.status,
             notes: jobApplication.notes,
             jobDescription: jobApplication.job_description,
@@ -101,7 +101,7 @@ export class ApplicationComponent implements OnInit {
       title: this.formData.jobTitle,
       ref_url: this.formData.referenceUrl,
       status: this.formData.status,
-      applied_date: Date.parse(this.formData.appliedDate),
+      applied_date: this.getAppliedDateInEpoch(this.formData.appliedDate),
       notes: this.formData.notes,
       job_description: this.formData.jobDescription,
       recruiter_info: {
@@ -123,7 +123,7 @@ export class ApplicationComponent implements OnInit {
       title: this.formData.jobTitle,
       ref_url: this.formData.referenceUrl,
       status: this.formData.status,
-      applied_date: Date.parse(this.formData.appliedDate),
+      applied_date: this.getAppliedDateInEpoch(this.formData.appliedDate),
       notes: this.formData.notes,
       job_description: this.formData.jobDescription,
       recruiter_info: {
@@ -285,6 +285,16 @@ export class ApplicationComponent implements OnInit {
 
   isViewMode(): boolean {
     return this.mode === 'view';
+  }
+
+  getAppliedDateForDisplay(appliedDateInEpoch: number): string {
+    const date = new Date(appliedDateInEpoch);
+    return date.toISOString().split('T')[0];
+  }
+
+  getAppliedDateInEpoch(appliedDateForDisplay: string): number {
+    const date = new Date(appliedDateForDisplay + 'T00:00:00.000Z');
+    return date.getTime();
   }
 }
 
