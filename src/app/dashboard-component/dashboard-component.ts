@@ -250,4 +250,9 @@ export class DashboardComponent implements OnInit {
   isApplicationStatusMapEmpty(): boolean {
     return Object.keys(this.applicationStatusMap).length === 0;
   }
+
+    openApplication(jobApplicationDto: JobApplicationDto): void {
+    console.log('Navigating to:', jobApplicationDto.id);
+    this.router.navigate([`/application/${jobApplicationDto.id}`]);
+  }
 }
