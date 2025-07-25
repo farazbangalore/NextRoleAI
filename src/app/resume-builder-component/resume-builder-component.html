@@ -1,0 +1,340 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+
+  <!-- Main Content -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center space-x-4 mb-4">
+        <button (click)="goBack()" class="cursor-pointer flex items-center text-slate-600 hover:text-blue-600 transition-colors">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Back to Resume
+        </button>
+      </div>
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-slate-900 mb-2">
+            {{ isEditMode ? 'Edit Base Resume' : 'Create New Base Resume' }}
+          </h1>
+          <p class="text-slate-600">
+            {{ isEditMode ? 'Update your resume information and file' : 'Set up your master resume template that can be customized for different jobs' }}
+          </p>
+        </div>
+        <div class="mt-4 lg:mt-0 flex space-x-3">
+          <button 
+            (click)="saveDraft()"
+            [disabled]="isLoading"
+            class="cursor-pointer px-5 py-2.5 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+            Save as Draft
+          </button>
+          <button 
+            (click)="saveResume()"
+            [disabled]="isLoading || !isFormValid()"
+            class="cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105 shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+            <div *ngIf="isLoading" class="flex items-center">
+              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              {{ isEditMode ? 'Updating...' : 'Creating...' }}
+            </div>
+            <span *ngIf="!isLoading">
+              {{ isEditMode ? 'Update Resume' : 'Create Resume' }}
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoadingData" class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+      <p class="text-slate-600 mt-2">Loading resume details...</p>
+    </div>
+
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="bg-green-50 border border-green-200 rounded-xl p-6 mb-8">
+      <div class="flex items-center">
+        <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <p class="text-green-800">{{ successMessage }}</p>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 rounded-xl p-6 mb-8">
+      <div class="flex items-center">
+        <svg class="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <p class="text-red-800">{{ errorMessage }}</p>
+      </div>
+    </div>
+
+    <!-- Form Container -->
+    <div *ngIf="!isLoadingData" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <!-- Form Header -->
+      <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4">
+        <div class="flex items-center">
+          <svg class="w-6 h-6 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          <div>
+            <h2 class="text-xl font-semibold text-white">Resume Information</h2>
+            <p class="text-blue-100 mt-1">Fill in the details below to set up your base resume</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Content -->
+      <div class="px-8 py-8">
+        <form (ngSubmit)="onSubmit()" #resumeForm="ngForm" class="space-y-6">
+          <!-- Resume Name -->
+          <div>
+            <label for="resumeName" class="block text-sm font-medium text-slate-700 mb-2">
+              Resume Name *
+            </label>
+            <input
+              id="resumeName"
+              name="resumeName"
+              type="text"
+              [(ngModel)]="formData.name"
+              required
+              #resumeNameInput="ngModel"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 text-slate-900 placeholder-gray-400"
+              placeholder="e.g., Software Engineer Resume, Marketing Professional CV">
+            <div *ngIf="submitted && resumeNameInput.invalid" class="text-red-500 text-sm mt-1">
+              Resume name is required
+            </div>
+            <p class="text-sm text-slate-500 mt-1">
+              Choose a descriptive name that helps you identify this resume template
+            </p>
+          </div>
+
+          <!-- Template Selection -->
+          <!-- <div>
+            <label for="template" class="block text-sm font-medium text-slate-700 mb-2">
+              Resume Template *
+            </label>
+            <select
+              id="template"
+              name="template"
+              [(ngModel)]="formData.template"
+              required
+              #templateInput="ngModel"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 text-slate-900">
+              <option value="">Select a template</option>
+              <option value="modern">Modern - Clean and professional</option>
+              <option value="classic">Classic - Traditional format</option>
+              <option value="creative">Creative - Unique design elements</option>
+              <option value="minimal">Minimal - Simple and elegant</option>
+              <option value="executive">Executive - For senior positions</option>
+            </select>
+            <div *ngIf="submitted && templateInput.invalid" class="text-red-500 text-sm mt-1">
+              Please select a template
+            </div>
+          </div> -->
+
+          <!-- Reference URL -->
+          <div>
+            <label for="referenceUrl" class="block text-sm font-medium text-slate-700 mb-2">
+              Reference URL
+            </label>
+            <input
+              id="referenceUrl"
+              name="referenceUrl"
+              type="url"
+              [(ngModel)]="formData.reference_url"
+              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 text-slate-900 placeholder-gray-400"
+              placeholder="https://docs.google.com/document/... or https://overleaf.com/project/...">
+            <p class="text-sm text-slate-500 mt-1">
+              Optional: Link to Google Docs, Overleaf, or any online platform where your resume is created
+            </p>
+            
+            <!-- URL Type Detection -->
+            <div *ngIf="formData.reference_url" class="mt-2">
+              <div class="flex items-center space-x-2 text-sm">
+                <div [class]="getUrlTypeClass()" class="w-4 h-4 rounded-full flex items-center justify-center">
+                  <svg *ngIf="getUrlType() === 'google'" class="w-3 h-3 text-white" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  </svg>
+                  <svg *ngIf="getUrlType() === 'overleaf'" class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                  </svg>
+                  <svg *ngIf="getUrlType() === 'other'" class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                  </svg>
+                </div>
+                <span class="text-slate-600">{{ getUrlTypeLabel() }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- File Upload Section -->
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">
+              Resume File *
+            </label>
+            
+            <!-- Upload Area -->
+            <div 
+              class="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors cursor-pointer"
+              [class.border-blue-400]="isDragOver"
+              [class.bg-blue-50]="isDragOver"
+              (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave($event)"
+              (drop)="onDrop($event)"
+              (click)="fileInput.click()">
+              
+              <!-- Upload Icon and Text -->
+              <div *ngIf="!uploadedFile" class="space-y-2">
+                <svg class="w-12 h-12 text-slate-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                </svg>
+                <div>
+                  <p class="text-slate-700 font-medium">Click to upload or drag and drop</p>
+                  <p class="text-slate-500 text-sm">PDF, DOC, DOCX up to 10MB</p>
+                </div>
+              </div>
+
+              <!-- Uploaded File Preview -->
+              <div *ngIf="uploadedFile" class="flex items-center justify-center space-x-4">
+                <div class="flex items-center space-x-3 bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                  </div>
+                  <div class="text-left">
+                    <p class="font-medium text-slate-900">{{ uploadedFile.name }}</p>
+                    <p class="text-sm text-slate-600">{{ formatFileSize(uploadedFile.size) }}</p>
+                  </div>
+                  <button 
+                    type="button"
+                    (click)="removeFile($event)"
+                    class="text-red-600 hover:text-red-700 p-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hidden File Input -->
+            <input 
+              #fileInput 
+              type="file" 
+              accept=".pdf,.doc,.docx" 
+              (change)="onFileSelected($event)"
+              class="hidden">
+
+            <div *ngIf="submitted && !uploadedFile && !existingFile" class="text-red-500 text-sm mt-1">
+              Please upload a resume file
+            </div>
+
+            <!-- Existing File (Edit Mode) -->
+            <div *ngIf="existingFile && !uploadedFile" class="mt-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-sm font-medium text-slate-900">Current Resume</p>
+                    <p class="text-xs text-slate-600">{{ existingFile.name }}</p>
+                  </div>
+                </div>
+                <div class="flex space-x-2">
+                  <button 
+                    type="button"
+                    (click)="downloadExistingFile()"
+                    class="cursor-pointer text-blue-600 hover:text-blue-700 text-sm font-medium">
+                    Download
+                  </button>
+                  <button 
+                    type="button"
+                    (click)="fileInput.click()"
+                    class="cursor-pointer text-slate-600 hover:text-slate-700 text-sm font-medium">
+                    Replace
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label for="description" class="block text-sm font-medium text-slate-700 mb-2">
+              Description
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              rows="3"
+              [(ngModel)]="formData.description"
+              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 text-slate-900 resize-none placeholder-gray-400"
+              placeholder="Brief description of this resume template and when to use it..."></textarea>
+            <p class="text-sm text-slate-500 mt-1">
+              Optional: Add notes about this resume version for future reference
+            </p>
+          </div>
+
+          <!-- Set as Default -->
+          <div>
+            <div class="flex items-center">
+              <input
+                id="setAsDefault"
+                name="setAsDefault"
+                type="checkbox"
+                [(ngModel)]="formData.is_default"
+                class="cursor-pointer h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded">
+              <label for="setAsDefault" class="ml-2 block text-sm text-slate-700">
+                Set as default resume template
+              </label>
+            </div>
+            <p class="text-sm text-slate-500 mt-1 ml-6">
+              This resume will be used as the starting point for job-specific optimizations
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Tips Section -->
+    <div class="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+      <h3 class="text-lg font-semibold text-slate-900 mb-4">💡 Resume Creation Tips</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex items-start space-x-3">
+          <div class="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+          <div>
+            <h4 class="font-medium text-slate-900">Keep it Updated</h4>
+            <p class="text-sm text-slate-600">Regular updates ensure your base resume reflects your latest achievements and skills</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-3">
+          <div class="w-2 h-2 bg-purple-600 rounded-full mt-2 flex-shrink-0"></div>
+          <div>
+            <h4 class="font-medium text-slate-900">Reference URL</h4>
+            <p class="text-sm text-slate-600">Link to your online resume source for easy editing and collaboration</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-3">
+          <div class="w-2 h-2 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
+          <div>
+            <h4 class="font-medium text-slate-900">File Format</h4>
+            <p class="text-sm text-slate-600">PDF files are preferred for better ATS compatibility and formatting consistency</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-3">
+          <div class="w-2 h-2 bg-orange-600 rounded-full mt-2 flex-shrink-0"></div>
+          <div>
+            <h4 class="font-medium text-slate-900">Template Choice</h4>
+            <p class="text-sm text-slate-600">Select a template that matches your industry and career level</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

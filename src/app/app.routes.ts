@@ -12,6 +12,7 @@ import { JobResumeComponent } from './job-resume-component/job-resume-component'
 import { BaseResumeComponent } from './base-resume-component/base-resume-component';
 import { ResumeService } from './services/resume.service';
 import { ResumeComponent } from './resume-component/resume-component';
+import { ResumeBuilderComponent } from './resume-builder-component/resume-builder-component';
 
 
 export const routes: Routes = [
@@ -24,4 +25,6 @@ export const routes: Routes = [
     { path: 'user-details', component: UserDetailsComponent, canActivate: [authGuard] },
     { path: 'auth/callback', component: AuthCallbackComponent },
     { path: 'resume', component: ResumeComponent,  canActivate: [authGuard] },
+    { path: 'resume/add', component: ResumeBuilderComponent,  canActivate: [authGuard] },
+    { path: 'resume/:id', component: ResumeBuilderComponent,  canActivate: [authGuard] },
 ];

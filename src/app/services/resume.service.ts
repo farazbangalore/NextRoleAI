@@ -199,4 +199,58 @@ export class ResumeService {
             }
         ];
     }
+
+    // Add these methods to the existing ResumeService
+
+    // Create base resume with file upload
+    createBaseResumeWithFile(formData: FormData): Observable<BaseResume> {
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${localStorage.getItem('nextRole_auth_token')}`,
+            'user-id': '1234-user-id-xyz'
+            // Don't set Content-Type for FormData, let browser set it
+        });
+
+        return this.http.post<{ success: boolean, resume: BaseResume }>(`${this.baseUrl}/resumes/base/upload`, formData, { headers })
+            .pipe(
+                map(response => response.resume),
+                tap(resume => {
+                    const current = this.baseResumesSubject.value;
+                    this.baseResumesSubject.next([resume, ...current]);
+                }),
+                catchError(this.handleError)
+            );
+    }
+
+    // Update base resume with file upload
+    updateBaseResumeWithFile(id: string, formData: FormData): Observable<BaseResume> {
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${localStorage.getItem('nextRole_auth_token')}`,
+            'user-id': '1234-user-id-xyz'
+        });
+
+        return this.http.put<{ success: boolean, resume: BaseResume }>(`${this.baseUrl}/resumes/base/${id}/upload`, formData, { headers })
+            .pipe(
+                map(response => response.resume),
+                tap(updatedResume => {
+                    const current = this.baseResumesSubject.value;
+                    const index = current.findIndex(r => r.id === id);
+                    if (index !== -1) {
+                        current[index] = updatedResume;
+                        this.baseResumesSubject.next([...current]);
+                    }
+                }),
+                catchError(this.handleError)
+            );
+    }
+
+    // Get base resume by ID
+    getBaseResumeById(id: string): Observable<BaseResume> {
+        const headers = this.getAuthHeaders();
+
+        return this.http.get<{ success: boolean, resume: BaseResume }>(`${this.baseUrl}/resumes/base/${id}`, { headers })
+            .pipe(
+                map(response => response.resume),
+                catchError(this.handleError)
+            );
+    }
 }
