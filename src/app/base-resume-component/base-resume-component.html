@@ -1,0 +1,114 @@
+<div>
+  <!-- Header Actions -->
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+    <div>
+      <h2 class="text-xl font-semibold text-slate-900 mb-1">Base Resumes</h2>
+      <p class="text-sm text-slate-600">Your master resume templates that can be customized for different jobs</p>
+    </div>
+    <div class="mt-4 sm:mt-0 flex space-x-3">
+      <button 
+        (click)="importFromProfile()"
+        class="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-all text-sm font-medium">
+        <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+        </svg>
+        Import from Profile
+      </button>
+      <button 
+        (click)="createNewBaseResume()"
+        class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105">
+        <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        New Base Resume
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center py-12">
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+    <p class="text-slate-600 mt-2">Loading your resumes...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && baseResumes.length === 0" class="text-center py-12">
+    <div class="w-16 h-16 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+      <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      </svg>
+    </div>
+    <h3 class="text-lg font-medium text-slate-900 mb-2">No base resumes yet</h3>
+    <p class="text-slate-600 mb-6">Create your first resume template to get started</p>
+    <button 
+      (click)="createNewBaseResume()"
+      class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all">
+      Create Your First Resume
+    </button>
+  </div>
+
+  <!-- Resume Grid -->
+  <div *ngIf="!isLoading && baseResumes.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let resume of baseResumes" class="bg-slate-50 rounded-lg p-6 border border-slate-200 hover:shadow-md transition-shadow cursor-pointer">
+      <!-- Resume Header -->
+      <div class="flex items-start justify-between mb-4">
+        <div class="flex-1">
+          <h3 class="text-lg font-semibold text-slate-900 mb-1">{{ resume.name }}</h3>
+          <p class="text-sm text-slate-600">Template: {{ resume.template }}</p>
+        </div>
+        <div class="relative">
+          <button (click)="toggleResumeMenu(resume.id)" class="p-1 text-slate-400 hover:text-slate-600">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+            </svg>
+          </button>
+          
+          <!-- Dropdown Menu -->
+          <div *ngIf="activeResumeMenu === resume.id" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-slate-200 z-10">
+            <div class="py-1">
+              <button (click)="editResume(resume)" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Edit Resume</button>
+              <button (click)="duplicateResume(resume)" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Duplicate</button>
+              <button (click)="downloadResume(resume)" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Download PDF</button>
+              <button (click)="setAsDefault(resume)" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Set as Default</button>
+              <div class="border-t border-slate-200"></div>
+              <button (click)="deleteResume(resume)" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Default Badge -->
+      <div *ngIf="resume.is_default" class="mb-3">
+        <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Default Resume</span>
+      </div>
+
+      <!-- Resume Preview -->
+      <div class="bg-white rounded-lg p-4 mb-4 border border-slate-200">
+        <div class="text-center">
+          <h4 class="font-semibold text-slate-900 text-sm">{{ resume.personal_info.full_name }}</h4>
+          <p class="text-xs text-slate-600 mt-1">{{ resume.personal_info.email }}</p>
+          <p class="text-xs text-slate-600">{{ resume.personal_info.location }}</p>
+          <div class="mt-2 h-12 bg-slate-100 rounded text-xs text-slate-500 flex items-center justify-center">
+            Resume Preview
+          </div>
+        </div>
+      </div>
+
+      <!-- Resume Stats -->
+      <div class="flex justify-between text-sm text-slate-600 mb-4">
+        <span>{{ resume.sections.length }} sections</span>
+        <span>Updated {{ getTimeAgo(resume.updated_at) }}</span>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-2">
+        <button (click)="editResume(resume)" class="flex-1 text-center px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200 rounded-lg transition-colors">
+          Edit
+        </button>
+        <button (click)="optimizeForJob(resume)" class="flex-1 text-center px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+          Optimize
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

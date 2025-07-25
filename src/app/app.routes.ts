@@ -8,6 +8,10 @@ import { UserDetailsComponent } from './user-details-component/user-details-comp
 import { RenderMode, ServerRoute } from '@angular/ssr';
 import { AuthCallbackComponent } from './auth-callback-component/auth-callback-component';
 import { authGuard } from './auth-guard';
+import { JobResumeComponent } from './job-resume-component/job-resume-component';
+import { BaseResumeComponent } from './base-resume-component/base-resume-component';
+import { ResumeService } from './services/resume.service';
+import { ResumeComponent } from './resume-component/resume-component';
 
 
 export const routes: Routes = [
@@ -19,4 +23,5 @@ export const routes: Routes = [
     { path: 'application/:id', component: ApplicationComponent, canActivate: [authGuard] },
     { path: 'user-details', component: UserDetailsComponent, canActivate: [authGuard] },
     { path: 'auth/callback', component: AuthCallbackComponent },
+    { path: 'resume', component: ResumeComponent,  canActivate: [authGuard] },
 ];

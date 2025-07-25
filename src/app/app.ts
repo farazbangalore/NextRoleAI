@@ -4,10 +4,13 @@ import { NavigationComponent } from './navigation-component/navigation-component
 import { AuthService } from './services/auth.service';
 import { ToastComponent } from "./toast-component/toast-component";
 import { ConfirmationDialogComponent } from './confirmation-dialog-component/confirmation-dialog-component';
+import { BaseResumeComponent } from './base-resume-component/base-resume-component';
+import { JobResumeComponent } from './job-resume-component/job-resume-component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavigationComponent, ToastComponent, ConfirmationDialogComponent],
+  imports: [RouterOutlet, NavigationComponent, ToastComponent, ConfirmationDialogComponent
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
