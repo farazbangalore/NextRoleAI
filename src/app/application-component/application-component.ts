@@ -5,6 +5,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { JobApplicationRequest } from '../models/request/job-application.request';
 import { JobApplicationService } from '../services/job-application.service';
 import { ToastService } from '../services/toast.service';
+import { ConfirmationDialogComponent } from '../confirmation-dialog-component/confirmation-dialog-component';
+import { ConfirmationDialogService } from '../services/confirmation-dialog.service';
+import { ApiResponse } from '../models/api.response';
 
 @Component({
   selector: 'app-application-component',
@@ -32,14 +35,16 @@ export class ApplicationComponent implements OnInit {
   apiCallInProgress: boolean = false;
   isApplicationFetching: boolean = false;
   isUpdateCallInProgress: boolean = false;
-  applicationId: string | null = null; // Track loaded application
+  applicationId: string  = ''; // Track loaded application
+  isApplicationDeleting: boolean = false;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private jobApplicationService: JobApplicationService,
     private toastService: ToastService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private confirmationDialog:ConfirmationDialogService
   ) { }
 
   ngOnInit(): void {
@@ -183,6 +188,35 @@ export class ApplicationComponent implements OnInit {
   navigateToDashboard(): void {
     // Navigate back to dashboard
     this.router.navigate(['/dashboard']);
+  }
+
+  async deleteApplication(): Promise<void> {
+    const confirmed = await this.confirmationDialog.confirm({
+      title: 'Delete Application',
+      message: `Are you sure you want to delete this application for ${this.formData.companyName}? This action cannot be undone.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      type: 'danger'
+    });
+
+    if (!confirmed) {
+      return;
+    }
+    this.isApplicationDeleting = true;
+    this.jobApplicationService.deleteJobApplicationById(this.applicationId)
+      .subscribe({
+        next: (response: ApiResponse) => {
+          this.toastService.showSuccess('Application deleted successfully!', 2000);
+          console.log('Application deleted:', response.data);
+          this.isApplicationDeleting = false;
+          this.router.navigate(['/applications-home']);
+          this.cdr.markForCheck();          
+        },
+        error: (error) => {
+          console.error('Error loading applications:', error);
+          this.isApplicationDeleting = false;
+        }
+      });
   }
 
   private isFormValid(): boolean {
