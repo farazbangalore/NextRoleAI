@@ -8,7 +8,7 @@
     <div class="mt-4 sm:mt-0 flex space-x-3">
       <button 
         (click)="importFromProfile()"
-        class="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-all text-sm font-medium">
+        class="cursor-pointer px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-all text-sm font-medium">
         <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
         </svg>
@@ -16,7 +16,7 @@
       </button>
       <button 
         (click)="createNewBaseResume()"
-        class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105">
+        class="cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105">
         <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
         </svg>
@@ -57,7 +57,7 @@
           <p class="text-sm text-slate-600">Template: {{ resume.template }}</p>
         </div>
         <div class="relative">
-          <button (click)="toggleResumeMenu(resume.id)" class="p-1 text-slate-400 hover:text-slate-600">
+          <button (click)="toggleResumeMenu(resume.id)" class="cursor-pointer p-1 text-slate-400 hover:text-slate-600">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
             </svg>
