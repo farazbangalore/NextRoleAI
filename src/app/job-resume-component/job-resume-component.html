@@ -49,13 +49,13 @@
   </div>
 
   <!-- Loading State -->
-  <div *ngIf="isLoading" class="text-center py-12">
+  <div *ngIf="isFetchingJobBasedResumes" class="text-center py-12">
     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
     <p class="text-slate-600 mt-2">Loading optimized resumes...</p>
   </div>
 
   <!-- Empty State -->
-  <div *ngIf="!isLoading && filteredResumes.length === 0" class="text-center py-12">
+  <div *ngIf="!isFetchingJobBasedResumes && filteredResumes.length === 0" class="text-center py-12">
     <div class="w-16 h-16 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-4">
       <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
@@ -71,17 +71,17 @@
   </div>
 
   <!-- Resume Grid -->
-  <div *ngIf="!isLoading && filteredResumes.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div *ngIf="!isFetchingJobBasedResumes && filteredResumes.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <div *ngFor="let resume of filteredResumes" class="bg-slate-50 rounded-lg p-6 border border-slate-200 hover:shadow-md transition-shadow cursor-pointer">
       <!-- Resume Header -->
       <div class="flex items-start justify-between mb-4">
         <div class="flex-1">
-          <h3 class="text-lg font-semibold text-slate-900 mb-1">{{ resume.job_title }}</h3>
-          <p class="text-sm text-slate-600 font-medium">{{ resume.company_name }}</p>
-          <p class="text-xs text-slate-500 mt-1">{{ resume.name }}</p>
+          <h3 class="text-lg font-semibold text-slate-900 mb-1">{{ resume.title }}</h3>
+          <p class="text-sm text-slate-600 font-medium">{{ resume.company }}</p>
+          <p class="text-xs text-slate-500 mt-1">{{ getResumeName(resume) }}</p>
         </div>
         <div class="relative">
-          <button (click)="toggleResumeMenu(resume.id)" class="p-1 text-slate-400 hover:text-slate-600">
+          <button (click)="toggleResumeMenu(resume.id)" class="cursor-pointer p-1 text-slate-400 hover:text-slate-600">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
             </svg>
@@ -105,7 +105,7 @@
       <div class="mb-4">
         <div class="flex items-center justify-between text-sm mb-2">
           <span class="text-slate-600">ATS Score</span>
-          <span [class]="getATSScoreClass(resume.ats_score)" class="font-semibold">{{ resume.ats_score }}%</span>
+          <span [class]="getATSScoreClass(resume.ats_score)" class="font-semibold">{{ getAtsScore(resume.ats_score) }}</span>
         </div>
         <div class="w-full bg-slate-200 rounded-full h-2">
           <div [style.width.%]="resume.ats_score" [class]="getATSScoreBarClass(resume.ats_score)" class="h-2 rounded-full transition-all duration-300"></div>
@@ -118,7 +118,8 @@
           <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
           </svg>
-          {{ resume.optimizations.length }} AI optimizations applied
+          <!-- {{ resume.optimizations.length }} AI optimizations applied -->
+          AI optimizations applied
         </div>
       </div>
 
@@ -138,17 +139,18 @@
 
       <!-- Timestamps -->
       <div class="flex justify-between text-xs text-slate-500 mb-4">
-        <span>Created {{ getTimeAgo(resume.created_at) }}</span>
-        <span>{{ resume.optimizations.length }} changes</span>
+        <span>Modified {{ getTimeAgo(resume.modified_at) }}</span>
+        <!-- <span>{{ resume.optimizations.length }} changes</span> -->
+        <span>0 changes</span>
       </div>
 
       <!-- Actions -->
       <div class="flex gap-2">
-        <button (click)="viewResume(resume)" class="flex-1 text-center px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200 rounded-lg transition-colors">
+        <button (click)="viewResume(resume)" class="cursor-pointer flex-1 text-center px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200 rounded-lg transition-colors">
           View
         </button>
-        <button (click)="downloadResume(resume)" class="flex-1 text-center px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-          Download
+        <button (click)="downloadResume(resume)" class="cursor-pointer flex-1 text-center px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-100 rounded-lg transition-colors">
+          Optimize
         </button>
       </div>
     </div>

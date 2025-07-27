@@ -1,8 +1,12 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { ResumeService, JobOrientedResume } from '../services/resume.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { JobBasedResumeDto } from '../models/dto/job-based-resume.dto';
+import { ApiResponse } from '../models/api.response';
+import { DocumentUtils } from '../utils/document-utils';
+import { TimeUtils } from '../utils/time-utils';
 
 @Component({
   selector: 'app-job-resume-component',
@@ -11,9 +15,9 @@ import { CommonModule } from '@angular/common';
   styleUrl: './job-resume-component.css'
 })
 export class JobResumeComponent implements OnInit {
-  jobOrientedResumes: JobOrientedResume[] = [];
-  filteredResumes: JobOrientedResume[] = [];
-  isLoading = false;
+  jobBasedResumes: JobBasedResumeDto[] = [];
+  filteredResumes: JobBasedResumeDto[] = [];
+  isFetchingJobBasedResumes = false;
   activeResumeMenu: string | null = null;
 
   // Filters
@@ -24,29 +28,41 @@ export class JobResumeComponent implements OnInit {
 
   constructor(
     private resumeService: ResumeService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     this.loadJobOrientedResumes();
   }
 
   loadJobOrientedResumes(): void {
-    this.isLoading = true;
-    setTimeout(() => {
-      this.jobOrientedResumes = this.resumeService.getMockJobOrientedResumes();
-      this.uniqueCompanies = [...new Set(this.jobOrientedResumes.map(r => r.company_name).filter(Boolean))] as string[];
-      this.applyFilters();
-      this.isLoading = false;
-    }, 800);
+    this.isFetchingJobBasedResumes = true;
+    this.resumeService.getAllJobBasedResume()
+      .subscribe({
+        next: (response: ApiResponse) => {
+          this.jobBasedResumes = response.data as JobBasedResumeDto[];
+          this.filteredResumes = this.jobBasedResumes
+          console.log("Job based resumes: ", this.jobBasedResumes);
+          this.isFetchingJobBasedResumes = false;
+          // this.buildApplicationStatusMap();
+          // this.refreshStats();
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          console.error('Error loading applications:', error);
+          this.isFetchingJobBasedResumes = false;
+          this.cdr.markForCheck();
+        }
+      });
   }
 
   applyFilters(): void {
-    let filtered = [...this.jobOrientedResumes];
+    let filtered = [...this.jobBasedResumes];
 
     // Company filter
     if (this.companyFilter) {
-      filtered = filtered.filter(resume => resume.company_name === this.companyFilter);
+      filtered = filtered.filter(resume => resume.company === this.companyFilter);
     }
 
     // ATS Score filter
@@ -73,7 +89,7 @@ export class JobResumeComponent implements OnInit {
         case 'ats_score':
           return b.ats_score - a.ats_score;
         case 'company_name':
-          return (a.company_name || '').localeCompare(b.company_name || '');
+          return (a.company || '').localeCompare(b.company || '');
         case 'created_at':
         default:
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -87,24 +103,24 @@ export class JobResumeComponent implements OnInit {
     this.router.navigate(['/resume/optimize']);
   }
 
-  viewResume(resume: JobOrientedResume): void {
+  viewResume(resume: JobBasedResumeDto): void {
     this.router.navigate(['/resume/view', resume.id]);
   }
 
-  editResume(resume: JobOrientedResume): void {
+  editResume(resume: JobBasedResumeDto): void {
     this.router.navigate(['/resume/edit', resume.id]);
   }
 
-  reOptimize(resume: JobOrientedResume): void {
+  reOptimize(resume: JobBasedResumeDto): void {
     console.log('Re-optimize resume:', resume);
   }
 
-  downloadResume(resume: JobOrientedResume): void {
+  downloadResume(resume: JobBasedResumeDto): void {
     console.log('Download resume:', resume);
   }
 
-  deleteResume(resume: JobOrientedResume): void {
-    if (confirm(`Are you sure you want to delete the resume for "${resume.job_title}" at "${resume.company_name}"?`)) {
+  deleteResume(resume: JobBasedResumeDto): void {
+    if (confirm(`Are you sure you want to delete the resume for "${resume.title}" at "${resume.company}"?`)) {
       console.log('Delete resume:', resume);
     }
   }
@@ -114,37 +130,40 @@ export class JobResumeComponent implements OnInit {
   }
 
   getATSScoreClass(score: number): string {
+    if (score == null) {
+      return 'text-slate-400';
+    }
     if (score >= 90) return 'text-green-600';
     if (score >= 80) return 'text-blue-600';
     if (score >= 70) return 'text-yellow-600';
-    return 'text-red-600';
+    return 'text-red-500';
   }
 
   getATSScoreBarClass(score: number): string {
+    if (score == null) {
+      return 'text-slate-400';
+    }
     if (score >= 90) return 'bg-green-500';
     if (score >= 80) return 'bg-blue-500';
     if (score >= 70) return 'bg-yellow-500';
     return 'bg-red-500';
   }
 
-  getTimeAgo(dateString: string): string {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInMs = now.getTime() - date.getTime();
-    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-
-    if (diffInDays === 0) return 'today';
-    if (diffInDays === 1) return '1 day ago';
-    if (diffInDays < 7) return `${diffInDays} days ago`;
-    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} week${Math.floor(diffInDays / 7) > 1 ? 's' : ''} ago`;
-    return `${Math.floor(diffInDays / 30)} month${Math.floor(diffInDays / 30) > 1 ? 's' : ''} ago`;
+  getTimeAgo(epochMillis: number): string {
+    console.log(epochMillis);
+    return TimeUtils.getTimeAgo(epochMillis);
   }
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: Event): void {
-    const target = event.target as HTMLElement;
-    if (!target.closest('.relative')) {
-      this.activeResumeMenu = null;
+  getResumeName(resume: JobBasedResumeDto): string {
+    const result = DocumentUtils.getDocumentName(resume.resume_url)
+    console.log("File Name", result);
+    return result;
+  }
+
+  getAtsScore(atsScore: any): string {
+    if (atsScore == null) {
+      return 'Not Analyzed';
     }
+    return `${atsScore}%`;
   }
 }

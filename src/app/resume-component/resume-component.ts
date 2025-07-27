@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './resume-component.css'
 })
 export class ResumeComponent implements OnInit {
-  activeTab: 'base' | 'job-oriented' = 'base';
+  activeTab: 'base' | 'job-oriented' = 'job-oriented';
   baseResumes: BaseResume[] = [];
   jobOrientedResumes: JobOrientedResume[] = [];
   

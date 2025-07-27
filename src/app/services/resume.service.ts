@@ -1,7 +1,8 @@
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { Observable, BehaviorSubject, throwError } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+import { ApiResponse } from '../models/api.response';
 
 // Resume Interfaces
 export interface BaseResume {
@@ -68,6 +69,17 @@ export class ResumeService {
     public jobOrientedResumes$ = this.jobOrientedResumesSubject.asObservable();
 
     constructor(private http: HttpClient) { }
+
+
+    getAllJobBasedResume(): Observable<ApiResponse> {
+        return this.http.get<ApiResponse>(`${this.baseUrl}/job-based-resume/all`)
+            .pipe(
+                tap(response => {
+                    console.log('Fetched job applications:', response.data);
+                }),
+                catchError(this.handleError)
+            );
+    }
 
     // Base Resume Methods
     getBaseResumes(): Observable<BaseResume[]> {
