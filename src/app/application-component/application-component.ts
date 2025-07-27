@@ -8,6 +8,8 @@ import { ToastService } from '../services/toast.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog-component/confirmation-dialog-component';
 import { ConfirmationDialogService } from '../services/confirmation-dialog.service';
 import { ApiResponse } from '../models/api.response';
+import { JobApplicationDto } from '../models/dto/job-application.dto';
+import { DocumentUtils } from '../utils/document-utils';
 
 @Component({
   selector: 'app-application-component',
@@ -19,8 +21,16 @@ export class ApplicationComponent implements OnInit {
   submitted = false;
   mode: 'create' | 'view' | 'edit' = 'create';
   appliedDateInEpoch: number = 0;
+  isDragOver = false;
+  errorMessage = '';
+  successMessage = '';
+  uploadedFile: File;
+  existingFile: { name: string; url: string } | null = null;
+  currentFileName = '';
+
 
   formData = {
+    job_id: '',
     companyName: '',
     jobTitle: '',
     referenceUrl: '',
@@ -35,7 +45,7 @@ export class ApplicationComponent implements OnInit {
   apiCallInProgress: boolean = false;
   isApplicationFetching: boolean = false;
   isUpdateCallInProgress: boolean = false;
-  applicationId: string  = ''; // Track loaded application
+  applicationId: string = ''; // Track loaded application
   isApplicationDeleting: boolean = false;
 
   constructor(
@@ -44,7 +54,7 @@ export class ApplicationComponent implements OnInit {
     private jobApplicationService: JobApplicationService,
     private toastService: ToastService,
     private cdr: ChangeDetectorRef,
-    private confirmationDialog:ConfirmationDialogService
+    private confirmationDialog: ConfirmationDialogService
   ) { }
 
   ngOnInit(): void {
@@ -69,19 +79,21 @@ export class ApplicationComponent implements OnInit {
     this.jobApplicationService.getJobApplicationById(id).subscribe({
       next: (response) => {
         if (response.status_code === 200) {
-          const jobApplication = response.data[0];
+          const jobApplication = response.data[0] as JobApplicationDto;
           console.log('Loaded application:', jobApplication);
           this.formData = {
+            job_id: jobApplication.job_id,
             companyName: jobApplication.company,
             jobTitle: jobApplication.title,
-            referenceUrl: jobApplication.ref_url,
+            referenceUrl: jobApplication.ref_url ?? '',
             appliedDate: this.getAppliedDateForDisplay(jobApplication.applied_date),
             status: jobApplication.status,
-            notes: jobApplication.notes,
-            jobDescription: jobApplication.job_description,
-            recruiterName: jobApplication.recruiter_info?.name,
-            recruiterEmail: jobApplication.recruiter_info?.email
+            notes: jobApplication.notes ?? '',
+            jobDescription: jobApplication.job_description ?? '',
+            recruiterName: jobApplication.recruiter_info?.name ?? '',
+            recruiterEmail: jobApplication.recruiter_info?.email ?? ''
           };
+          this.currentFileName = this.getResumeName(jobApplication.resume_url ?? '');
         }
         this.apiCallInProgress = false;
         this.isApplicationFetching = false;
@@ -102,6 +114,7 @@ export class ApplicationComponent implements OnInit {
       return;
     }
     const newApplication: JobApplicationRequest = {
+      job_id: this.formData.job_id,
       company: this.formData.companyName,
       title: this.formData.jobTitle,
       ref_url: this.formData.referenceUrl,
@@ -124,6 +137,7 @@ export class ApplicationComponent implements OnInit {
       return;
     }
     const updatedApplication: JobApplicationRequest = {
+      job_id: this.formData.job_id,
       company: this.formData.companyName,
       title: this.formData.jobTitle,
       ref_url: this.formData.referenceUrl,
@@ -210,7 +224,7 @@ export class ApplicationComponent implements OnInit {
           console.log('Application deleted:', response.data);
           this.isApplicationDeleting = false;
           this.router.navigate(['/applications-home']);
-          this.cdr.markForCheck();          
+          this.cdr.markForCheck();
         },
         error: (error) => {
           console.error('Error loading applications:', error);
@@ -221,6 +235,7 @@ export class ApplicationComponent implements OnInit {
 
   private isFormValid(): boolean {
     return !!(
+      this.formData.job_id &&
       this.formData.companyName &&
       this.formData.jobTitle &&
       this.formData.appliedDate &&
@@ -235,7 +250,7 @@ export class ApplicationComponent implements OnInit {
   private saveApplication(application: JobApplicationRequest): void {
     this.apiCallInProgress = true;
     console.log('Saving application:', application);
-    this.jobApplicationService.addJobApplication(application).subscribe({
+    this.jobApplicationService.addJobApplication(application, this.uploadedFile).subscribe({
       next: (response) => {
         if (response.status_code === 200) {
           this.resetForm();
@@ -274,6 +289,7 @@ export class ApplicationComponent implements OnInit {
 
   private resetForm(): void {
     this.formData = {
+      job_id: '',
       companyName: '',
       jobTitle: '',
       referenceUrl: '',
@@ -329,6 +345,83 @@ export class ApplicationComponent implements OnInit {
   getAppliedDateInEpoch(appliedDateForDisplay: string): number {
     const date = new Date(appliedDateForDisplay + 'T00:00:00.000Z');
     return date.getTime();
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver = false;
+    const file = event.dataTransfer?.files[0];
+    this.handleFileSelection(file);
+  }
+
+  private handleFileSelection(file: File | undefined): void {
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!allowedTypes.includes(file.type)) {
+      this.errorMessage = 'Please upload a PDF, DOC, or DOCX file';
+      return;
+    }
+
+    // Validate file size (10MB)
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      this.errorMessage = 'File size must be less than 10MB';
+      return;
+    }
+
+    this.uploadedFile = file;
+    this.clearMessages();
+  }
+  private clearMessages(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  removeFile(event: Event): void {
+    event.stopPropagation();
+    // this.uploadedFile = null;
+  }
+
+  onFileSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
+    console.log("Selected File:");
+    console.log(file?.name);
+    this.currentFileName = file?.name!;
+    this.handleFileSelection(file);
+  }
+
+  downloadExistingFile(): void {
+    if (this.existingFile) {
+      window.open(this.existingFile.url, '_blank');
+    }
+  }
+
+  getResumeName(resumeUrl: string): string {
+    console.log("Input URL", resumeUrl);
+    const result = DocumentUtils.getDocumentName(resumeUrl)
+    console.log("File Name", result);
+    return result;
   }
 }
 

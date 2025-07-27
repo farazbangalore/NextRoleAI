@@ -13,4 +13,7 @@ export interface JobApplicationDto {
     recruiter_info?: RecruiterInfo;
     created_at: number;
     modified_at: number;
+    resume_url: string;
+    ats_score: number;
+    job_id: string;
 }

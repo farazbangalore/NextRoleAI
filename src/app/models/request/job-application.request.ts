@@ -1,6 +1,7 @@
 import { RecruiterInfo } from "./recruiter-info";
 
 export interface JobApplicationRequest {
+    job_id: string;
     company: string;
     title: string;
     ref_url?: string;

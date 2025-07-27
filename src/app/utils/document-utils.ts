@@ -4,7 +4,8 @@ export class DocumentUtils {
             const parts = filePath.split('/');
             const fileNameWithExt = parts[parts.length - 1];
             const dotIndex = fileNameWithExt.lastIndexOf('.');
-            return dotIndex !== -1 ? fileNameWithExt.substring(0, dotIndex) : fileNameWithExt;
+            // return dotIndex !== -1 ? fileNameWithExt.substring(0, dotIndex) : fileNameWithExt;
+            return fileNameWithExt
         }
         return "Sample Name"
     }

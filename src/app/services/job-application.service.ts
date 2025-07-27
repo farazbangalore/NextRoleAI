@@ -17,11 +17,14 @@ export class JobApplicationService {
     constructor(private http: HttpClient) {
     }
 
-    addJobApplication(application: JobApplicationRequest): Observable<ApiResponse> {
+    addJobApplication(application: JobApplicationRequest, file: File): Observable<ApiResponse> {
         const headers = new HttpHeaders({
-            'Content-Type': 'application/json'
+            'Accept': 'multipart/form-data'
         });
-        return this.http.post<ApiResponse>(`${this.baseUrl}/job-application/`, application, { headers })
+        const formData = new FormData();
+        formData.append('data', JSON.stringify(application));
+        formData.append('file', file);
+        return this.http.post<ApiResponse>(`${this.baseUrl}/job-application/`, formData, { headers })
             .pipe(
                 tap(response => {
                     if (response.status_code == 200) {
