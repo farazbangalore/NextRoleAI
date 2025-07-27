@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, HostListener, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { ResumeService, JobOrientedResume } from '../services/resume.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -15,6 +15,8 @@ import { TimeUtils } from '../utils/time-utils';
   styleUrl: './job-resume-component.css'
 })
 export class JobResumeComponent implements OnInit {
+  
+  @Output() jobBasedResumeCount = new EventEmitter<number>();
   jobBasedResumes: JobBasedResumeDto[] = [];
   filteredResumes: JobBasedResumeDto[] = [];
   isFetchingJobBasedResumes = false;
@@ -42,8 +44,9 @@ export class JobResumeComponent implements OnInit {
       .subscribe({
         next: (response: ApiResponse) => {
           this.jobBasedResumes = response.data as JobBasedResumeDto[];
-          this.filteredResumes = this.jobBasedResumes
+          this.filteredResumes = this.jobBasedResumes;
           console.log("Job based resumes: ", this.jobBasedResumes);
+          this.jobBasedResumeCount.emit(this.jobBasedResumes.length);
           this.isFetchingJobBasedResumes = false;
           // this.buildApplicationStatusMap();
           // this.refreshStats();

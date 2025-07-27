@@ -33,8 +33,8 @@
               </path>
             </svg>
             Job Oriented Resume
-            <span class="ml-2 bg-slate-100 text-slate-600 py-0.5 px-2 rounded-full text-xs font-medium">{{
-              jobOrientedResumeCount }}</span>
+            <span class="ml-2 bg-slate-100 text-slate-600 py-0.5 px-2 rounded-full text-xs font-medium">
+              {{jobBasedResumeCount}}</span>
           </button>
           <button (click)="activeTab = 'base'"
             [class]="activeTab === 'base' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
@@ -61,7 +61,7 @@
 
         <!-- Job Oriented Resume Tab -->
         <div *ngIf="activeTab === 'job-oriented'">
-          <app-job-resume-component></app-job-resume-component>
+          <app-job-resume-component (jobBasedResumeCount)="getJobBasedResumeCount($event)"></app-job-resume-component>
         </div>
       </div>
     </div>
