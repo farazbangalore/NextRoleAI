@@ -41,7 +41,7 @@
         <h1 class="text-3xl font-bold text-slate-900 mb-2">AI Resume Analysis Results</h1>
         <p class="text-slate-600">
           <span *ngIf="this.resumeAnalysisResult">Review for <strong>{{ this.resumeAnalysisResult.resumeName }}</strong></span>
-          <span *ngIf="this.resumeAnalysisResult">&mdash; Matched to <strong>{{  this.resumeAnalysisResult.jobTitle }}</strong> at <strong>{{  this.resumeAnalysisResult.companyName }}</strong></span>
+          <span *ngIf="this.resumeAnalysisResult"> Matched to <strong>{{  this.resumeAnalysisResult.jobTitle }}</strong> at <strong>{{  this.resumeAnalysisResult.companyName }}</strong></span>
         </p>
       </div>
 
@@ -91,7 +91,7 @@
             <h3 class="text-lg font-semibold text-slate-900 flex items-center">
               <span [ngSwitch]="section.sectionType">
                 <svg *ngSwitchCase="'skills'" class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7 7h.01"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
                 <svg *ngSwitchCase="'experience'" class="w-5 h-5 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -114,13 +114,12 @@
               {{ section.score }}%
             </span>
           </div>
-          <div class="mb-2">
-            <div class="flex items-center space-x-1 text-xs text-slate-400">
-              <!-- <span class="uppercase tracking-wider">{{'MatcheD' | titlecase }}</span> -->
-              <span *ngIf="section.keywordsMatched && section.keywordsMatched.length"> <span class="text-green-600">{{ section.keywordsMatched.join(', ') }}</span></span>
+            <div *ngIf="section.keywordsMatched && section.keywordsMatched.length">
+                <h4 class="text-xs font-bold text-slate-800">Matched Skills:</h4>
+                <span class="text-xs text-green-600 mb-2"> {{ section.keywordsMatched.join(', ') }}</span>
             </div>
-          </div>
-          <div class="mb-3">
+
+          <div class="my-2">
             <div class="text-sm text-slate-700 whitespace-pre-line" [innerHTML]="section.sectionFeedback"></div>
           </div>
           <div *ngIf="section.suggestions && section.suggestions.length" class="mt-2">

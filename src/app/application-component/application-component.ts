@@ -178,6 +178,10 @@ export class ApplicationComponent implements OnInit {
     this.mode = 'edit';
   }
 
+  navigateToResumeAnalysis(): void {
+    this.router.navigate(['/resume-analysis', this.applicationId]);
+  }
+
   onCancelEdit(): void {
     this.mode = 'view';
     if (this.applicationId) {

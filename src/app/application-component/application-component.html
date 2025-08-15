@@ -12,12 +12,26 @@
           Back to Dashboard
         </button>
       </div>
-      <h1 class="text-3xl font-bold text-slate-900 mb-2">
-        <ng-container *ngIf="mode === 'create'">Add New Job Application</ng-container>
-        <ng-container *ngIf="mode === 'view'">Application Details</ng-container>
-        <ng-container *ngIf="mode === 'edit'">Edit Application</ng-container>
-      </h1>
-      <p class="text-slate-600">Track your job application and manage your pipeline effectively</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <h1 class="text-3xl font-bold text-slate-900 mb-2">
+          <ng-container *ngIf="mode === 'create'">Add New Job Application</ng-container>
+          <ng-container *ngIf="mode === 'view'">Application Details</ng-container>
+          <ng-container *ngIf="mode === 'edit'">Edit Application</ng-container>
+        </h1>
+        <div *ngIf="mode === 'view'">
+          <div class="flex-1 flex gap-4">
+            <button (click)="navigateToResumeAnalysis()"
+              class="ml-auto cursor-pointer px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600  text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-semibold w-fit transition-all transform hover:scale-105">
+              <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+              AI Resume Anlysis
+            </button>
+          </div>
+        </div>
+      </div>
+      <p class="text-slate-600 pt-2">Track your job application and manage your pipeline effectively</p>
     </div>
 
 
@@ -59,35 +73,35 @@
           </div> -->
 
 
-                <!-- Company and Job Id Row -->
+          <!-- Company and Job Id Row -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Company -->
             <div>
-            <label for="companyName" class="block text-sm font-medium text-slate-700 mb-2">
-              Company Name *
-            </label>
-            <input id="companyName" name="companyName" type="text" [(ngModel)]="formData.companyName"
-              [disabled]="isViewMode()" required
-              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
-              placeholder="e.g., Google, Microsoft, Amazon">
-            <div *ngIf="submitted && !formData.companyName" class="text-red-500 text-sm mt-1">
-              Company name is required
+              <label for="companyName" class="block text-sm font-medium text-slate-700 mb-2">
+                Company Name *
+              </label>
+              <input id="companyName" name="companyName" type="text" [(ngModel)]="formData.companyName"
+                [disabled]="isViewMode()" required
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
+                placeholder="e.g., Google, Microsoft, Amazon">
+              <div *ngIf="submitted && !formData.companyName" class="text-red-500 text-sm mt-1">
+                Company name is required
+              </div>
             </div>
-          </div>
 
             <!-- Job Id -->
-           <div>
-            <label for="jobId" class="block text-sm font-medium text-slate-700 mb-2">
-              Job Id *
-            </label>
-            <input id="jobId" name="jobId" type="text" [(ngModel)]="formData.job_id"
-              [disabled]="isViewMode()" required
-              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
-              placeholder="Job Id for tracking">
-            <div *ngIf="submitted && !formData.companyName" class="text-red-500 text-sm mt-1">
-              Job Id is required
+            <div>
+              <label for="jobId" class="block text-sm font-medium text-slate-700 mb-2">
+                Job Id *
+              </label>
+              <input id="jobId" name="jobId" type="text" [(ngModel)]="formData.job_id" [disabled]="isViewMode()"
+                required
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
+                placeholder="Job Id for tracking">
+              <div *ngIf="submitted && !formData.companyName" class="text-red-500 text-sm mt-1">
+                Job Id is required
+              </div>
             </div>
-          </div>
           </div>
 
           <!-- Job Title -->
@@ -310,7 +324,7 @@
           </div> -->
 
 
-            <!-- Comapany and job Id Row -->
+          <!-- Comapany and job Id Row -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Comapany -->
             <div>
@@ -318,12 +332,12 @@
                 Company Name *
               </label>
               <input id="companyName" name="companyName" type="text" [(ngModel)]="formData.companyName"
-              [disabled]="isViewMode()" required
-              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
-              placeholder="e.g., Google, Microsoft, Amazon">
-            <div *ngIf="submitted && !formData.companyName" class="text-red-500 text-sm mt-1">
-              Company name is required
-            </div>
+                [disabled]="isViewMode()" required
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
+                placeholder="e.g., Google, Microsoft, Amazon">
+              <div *ngIf="submitted && !formData.companyName" class="text-red-500 text-sm mt-1">
+                Company name is required
+              </div>
             </div>
 
             <!-- Job Id -->
@@ -331,13 +345,13 @@
               <label for="jobId" class="block text-sm font-medium text-slate-700 mb-2">
                 Job Id *
               </label>
-              <input id="jobId" name="jobId" type="text" [(ngModel)]="formData.job_id"
-              [disabled]="isViewMode()" required
-              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
-              placeholder="Job Id for tracking">
-            <div *ngIf="submitted && !formData.companyName" class="text-red-500 text-sm mt-1">
-              Job Id is required
-            </div>
+              <input id="jobId" name="jobId" type="text" [(ngModel)]="formData.job_id" [disabled]="isViewMode()"
+                required
+                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600  focus:border-blue-300 transition-all duration-200 text-slate-900 placeholder-gray-400"
+                placeholder="Job Id for tracking">
+              <div *ngIf="submitted && !formData.companyName" class="text-red-500 text-sm mt-1">
+                Job Id is required
+              </div>
             </div>
           </div>
 
@@ -525,13 +539,13 @@
         <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-slate-200"
           *ngIf="mode === 'view' || mode === 'edit'">
           <div class="flex-1 flex gap-4">
-            <button type="button" *ngIf="isViewMode()" (click)="onEdit()"
-              class="cursor-pointer flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium">
-              Edit
-            </button>
             <button type="button" *ngIf="isViewMode()" (click)="navigateToDashboard()"
               class="cursor-pointer flex-1 px-6 py-3 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-all duration-200 font-medium">
               Back
+            </button>
+            <button type="button" *ngIf="isViewMode()" (click)="onEdit()"
+              class="cursor-pointer flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium">
+              Edit
             </button>
 
             <button type="button" *ngIf="isViewMode()" (click)="deleteApplication()"
