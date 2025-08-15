@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { ApiResponse } from '../models/api.response';
+import { ResumeAnalysis } from '../models/resume-analysis';
 
 // Resume Interfaces
 export interface BaseResume {
@@ -123,6 +124,17 @@ export class ResumeService {
                 catchError(this.handleError)
             );
     }
+
+    analyzeResume(jobApplicationId: string): Observable<ApiResponse> {
+        return this.http.get<ApiResponse>(`${this.baseUrl}/resume/analyze/${jobApplicationId}`)
+            .pipe(
+                tap(response => {
+                    console.log('Fetched job applications:', response.data);
+                }),
+                catchError(this.handleError)
+            );
+    }
+
 
     // Helper methods
     private getAuthHeaders(): HttpHeaders {

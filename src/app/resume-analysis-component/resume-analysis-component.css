@@ -1,0 +1,25 @@
+/* Maintain consistency with rest of platform */
+.bg-slate-200 { background-color: #e5e7eb; }
+.text-slate-900 { color: #111827; }
+.text-slate-700 { color: #374151; }
+.text-slate-600 { color: #4b5563; }
+.text-slate-500 { color: #6b7280; }
+.text-slate-400 { color: #9ca3af; }
+.text-blue-600 { color: #2563eb; }
+.text-purple-600 { color: #9333ea; }
+.text-green-600 { color: #16a34a; }
+.text-yellow-600 { color: #ca8a04; }
+.text-red-600 { color: #dc2626; }
+
+.bg-white { background: #fff; }
+.rounded-xl { border-radius: 1rem; }
+.hover\:bg-slate-50:hover { background-color: #f8fafc; }
+
+.shadow-lg { box-shadow: 0 10px 25px 0 rgb(30 64 175 / 0.04); }
+.shadow-sm { box-shadow: 0 1px 2px 0 rgb(16 24 40 / 0.05); }
+.border { border-width: 1px; }
+.border-slate-200 { border-color: #e5e7eb; }
+
+.transition-all { transition: all 0.2s; }
+.transform { transition: transform 0.2s; }
+.hover\:scale-105:hover { transform: scale(1.05); }

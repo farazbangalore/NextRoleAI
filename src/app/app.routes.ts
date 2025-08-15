@@ -13,6 +13,7 @@ import { BaseResumeComponent } from './base-resume-component/base-resume-compone
 import { ResumeService } from './services/resume.service';
 import { ResumeComponent } from './resume-component/resume-component';
 import { ResumeBuilderComponent } from './resume-builder-component/resume-builder-component';
+import { ResumeAnalysisComponent } from './resume-analysis-component/resume-analysis-component';
 
 
 export const routes: Routes = [
@@ -27,4 +28,5 @@ export const routes: Routes = [
     { path: 'resume', component: ResumeComponent,  canActivate: [authGuard] },
     { path: 'resume/add', component: ResumeBuilderComponent,  canActivate: [authGuard] },
     { path: 'resume/:id', component: ResumeBuilderComponent,  canActivate: [authGuard] },
+    { path: 'resume-analysis/:jobApplicationId', component: ResumeAnalysisComponent,  canActivate: [authGuard] },
 ];

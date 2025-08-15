@@ -255,9 +255,10 @@ export class ApplicationComponent implements OnInit {
         if (response.status_code === 200) {
           this.resetForm();
           this.toastService.showSuccess('Application saved successfully!', 2000);
-          console.log('Application saved:', response.data);
+          console.log('Application saved:', response.data.id);
           this.apiCallInProgress = false;
-          this.navigateToDashboard();
+          // this.navigateToDashboard();
+          this.showResumeAnalysis(response.data.id);
           this.cdr.markForCheck();
         } else {
           console.error('Error saving application:', response.message);
@@ -271,6 +272,24 @@ export class ApplicationComponent implements OnInit {
     });
 
   }
+
+  async showResumeAnalysis(jobApplicationId: string): Promise<void> {
+    const confirmed = await this.confirmationDialog.confirm({
+      title: 'Analyze Resume?',
+      message: `Do you want to analyze the resume for ${this.formData.companyName}?`,
+      confirmText: 'Yes',
+      cancelText: 'Later',
+      type: 'info'
+    });
+
+    if (!confirmed) {
+      this.navigateToDashboard();
+      return;
+    }
+    this.router.navigate([`/resume-analysis/${jobApplicationId}`]);
+    return;
+  }
+
 
   private saveDraftApplication(draft: any): void {
     // In a real application, this would save to drafts
