@@ -135,6 +135,15 @@ export class ResumeService {
             );
     }
 
+    getResumeAnalysisById(jobApplicationId: string): Observable<ApiResponse> {
+        return this.http.get<ApiResponse>(`${this.baseUrl}/resume/analysis-summary/${jobApplicationId}`)
+            .pipe(
+                tap(response => {
+                    console.log('Fetched job applications:', response.data);
+                }),
+            );
+    }
+
 
     // Helper methods
     private getAuthHeaders(): HttpHeaders {

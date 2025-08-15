@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ResumeAnalysis } from '../models/resume-analysis';
 import { ResumeService } from '../services/resume.service';
 import { ApiResponse } from '../models/api.response';
+import { interval, Subscription } from 'rxjs';
+import { ResumeAnalysisDto } from '../models/dto/resume-analysis.dto';
 
 @Component({
   selector: 'app-resume-analysis-component',
@@ -12,12 +14,14 @@ import { ApiResponse } from '../models/api.response';
   templateUrl: './resume-analysis-component.html',
   styleUrl: './resume-analysis-component.css'
 })
-export class ResumeAnalysisComponent implements OnInit {
+export class ResumeAnalysisComponent implements OnInit, OnDestroy  {
 
   resumeAnalysisResult: ResumeAnalysis;
   atsScore = 0;
   isLoading = true;
-
+  animationStep = 0;
+  private animationInterval: Subscription | null = null;
+  private apiSub: Subscription | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -29,23 +33,74 @@ export class ResumeAnalysisComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       const jobApplicationId = params.get('jobApplicationId');
       if (jobApplicationId) {
-        this.analyzeResume(jobApplicationId);
+        this.loadResumeAnalysis(jobApplicationId);
       }
     });
   }
 
+  
+  startStepper() {
+    this.animationStep = 0;
+    this.animationInterval = interval(6000).subscribe(() => {
+      this.animationStep = (this.animationStep + 1) % 5;
+      this.cdr.markForCheck();
+    });
+  }
+
+  stopStepper() {
+    if (this.animationInterval) {
+      this.animationInterval.unsubscribe();
+      this.animationInterval = null;
+      this.cdr.markForCheck();
+    }
+  }
+
+  ngOnDestroy() {
+    this.stopStepper();
+    if (this.apiSub) this.apiSub.unsubscribe();
+    this.cdr.markForCheck();
+  }
+
   private analyzeResume(jobApplicationId: string) {
+    this.startStepper();
     this.resumeService.analyzeResume(jobApplicationId)
       .subscribe({
         next: (response: ApiResponse) => {
           this.resumeAnalysisResult = response.data as ResumeAnalysis;
           this.atsScore = this.resumeAnalysisResult.atsScore;
           this.isLoading = false;
+          this.stopStepper();
           this.cdr.markForCheck();
         },
         error: (error) => {
           console.error('Error loading applications:', error);
+          this.stopStepper();
           this.isLoading = false;
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  private loadResumeAnalysis(jobApplicationId: string) {
+    this.isLoading = true;
+    this.resumeService.getResumeAnalysisById(jobApplicationId)
+      .subscribe({
+        next: (response: ApiResponse) => {
+          console.log('Resume analysis response:', response);
+          const resumeAnalysisDto = response.data as ResumeAnalysisDto;
+          this.resumeAnalysisResult = resumeAnalysisDto.resume_analysis_summary;
+          this.atsScore = this.resumeAnalysisResult.atsScore;
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          console.error('Error loading applications:', error);
+          if(error.status === 404) {
+            console.log('No analysis found for this job application, starting analysis...',error);
+            this.analyzeResume(jobApplicationId);
+            this.cdr.markForCheck();
+
+          }
         }
       });
   }
