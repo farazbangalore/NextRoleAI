@@ -18,7 +18,8 @@ export class ResumeAnalysisComponent implements OnInit, OnDestroy  {
 
   resumeAnalysisResult: ResumeAnalysis;
   atsScore = 0;
-  isLoading = true;
+  isResumeAnalysisInProgress = false;
+  isResumeAnalysisFetching = false;
   animationStep = 0;
   private animationInterval: Subscription | null = null;
   private apiSub: Subscription | null = null;
@@ -62,27 +63,28 @@ export class ResumeAnalysisComponent implements OnInit, OnDestroy  {
   }
 
   private analyzeResume(jobApplicationId: string) {
+    this.isResumeAnalysisInProgress = true;
     this.startStepper();
     this.resumeService.analyzeResume(jobApplicationId)
       .subscribe({
         next: (response: ApiResponse) => {
           this.resumeAnalysisResult = response.data as ResumeAnalysis;
           this.atsScore = this.resumeAnalysisResult.atsScore;
-          this.isLoading = false;
+          this.isResumeAnalysisInProgress = false;
           this.stopStepper();
           this.cdr.markForCheck();
         },
         error: (error) => {
           console.error('Error loading applications:', error);
           this.stopStepper();
-          this.isLoading = false;
+          this.isResumeAnalysisInProgress = false;
           this.cdr.markForCheck();
         }
       });
   }
 
   private loadResumeAnalysis(jobApplicationId: string) {
-    this.isLoading = true;
+    this.isResumeAnalysisFetching = true;
     this.resumeService.getResumeAnalysisById(jobApplicationId)
       .subscribe({
         next: (response: ApiResponse) => {
@@ -90,7 +92,7 @@ export class ResumeAnalysisComponent implements OnInit, OnDestroy  {
           const resumeAnalysisDto = response.data as ResumeAnalysisDto;
           this.resumeAnalysisResult = resumeAnalysisDto.resume_analysis_summary;
           this.atsScore = this.resumeAnalysisResult.atsScore;
-          this.isLoading = false;
+          this.isResumeAnalysisFetching = false;
           this.cdr.markForCheck();
         },
         error: (error) => {
@@ -98,9 +100,10 @@ export class ResumeAnalysisComponent implements OnInit, OnDestroy  {
           if(error.status === 404) {
             console.log('No analysis found for this job application, starting analysis...',error);
             this.analyzeResume(jobApplicationId);
+            this.isResumeAnalysisFetching = false;
             this.cdr.markForCheck();
-
           }
+          this.isResumeAnalysisFetching = false;
         }
       });
   }
