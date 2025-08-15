@@ -78,7 +78,7 @@
         <div class="flex-1">
           <h3 class="text-lg font-semibold text-slate-900 mb-1">{{ resume.title }}</h3>
           <p class="text-sm text-slate-600 font-medium">{{ resume.company }}</p>
-          <p class="text-xs text-slate-500 mt-1">{{ getResumeName(resume) }}</p>
+          <!-- <p class="text-xs text-slate-500 mt-1">{{ getResumeName(resume) }}</p> -->
         </div>
         <div class="relative">
           <button (click)="toggleResumeMenu(resume.id)" class="cursor-pointer p-1 text-slate-400 hover:text-slate-600">
@@ -113,27 +113,28 @@
       </div>
 
       <!-- Optimizations Count -->
-      <div class="mb-4">
+      <!-- <div class="mb-4">
         <div class="flex items-center text-sm text-slate-600">
           <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
           </svg>
-          <!-- {{ resume.optimizations.length }} AI optimizations applied -->
+          {{ resume.optimizations.length }} AI optimizations applied
           AI optimizations applied
         </div>
-      </div>
+      </div> -->
 
       <!-- Resume Preview -->
       <div class="bg-white rounded-lg p-4 mb-4 border border-slate-200">
         <div class="text-center">
-          <div class="h-16 bg-gradient-to-br from-blue-50 to-purple-50 rounded text-xs text-slate-500 flex items-center justify-center mb-2">
-            Optimized Resume Preview
+          <div
+            class="h-16 bg-gradient-to-br from-blue-50 to-purple-50 rounded text-xs text-slate-600 font-semibold flex items-center justify-center mb-2">
+            {{ getResumeName(resume) }}
           </div>
-          <div class="space-y-1">
-            <div class="h-2 bg-slate-200 rounded w-3/4 mx-auto"></div>
-            <div class="h-2 bg-slate-200 rounded w-1/2 mx-auto"></div>
-            <div class="h-2 bg-slate-200 rounded w-2/3 mx-auto"></div>
-          </div>
+          <!-- <div class="space-y-1">
+                  <div class="h-2 bg-slate-200 rounded w-3/4 mx-auto"></div>
+                  <div class="h-2 bg-slate-200 rounded w-1/2 mx-auto"></div>
+                  <div class="h-2 bg-slate-200 rounded w-2/3 mx-auto"></div>
+                </div> -->
         </div>
       </div>
 
