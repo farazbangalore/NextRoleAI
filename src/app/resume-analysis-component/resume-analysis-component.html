@@ -173,7 +173,8 @@
             Download Resume
         </button>
     
-        <button (click)="analyzeResume(this.jobApplicationId)"
+        <input #fileInput type="file" accept=".pdf,.doc,.docx" (change)="onFileSelected($event)" class="hidden">
+        <button (click)="fileInput.click()"
             class="cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium px-4 py-2 rounded-lg shadow flex items-center transition-all hover:from-blue-700 hover:to-purple-700">
             <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>

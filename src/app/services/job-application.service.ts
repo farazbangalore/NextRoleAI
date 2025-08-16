@@ -84,11 +84,28 @@ export class JobApplicationService {
         const headers = new HttpHeaders({
             'Content-Type': 'application/json'
         });
-        return this.http.put<ApiResponse>(`${this.baseUrl}/job-application/${id}/${status}`, { headers })
+        return this.http.put<ApiResponse>(`${this.baseUrl}/job-application/status/${id}/${status}`, { headers })
             .pipe(
                 tap(response => {
                     if (response.status_code == 200) {
                         console.log('Application Status updated successfully:', response.data);
+                    }
+                }),
+                catchError(this.handleError)
+            );
+    }
+
+     updateJobApplicationResume(id: string, file: File): Observable<ApiResponse> {
+        const headers = new HttpHeaders({
+            'Accept': 'multipart/form-data'
+        });
+        const formData = new FormData();
+        formData.append('file', file);
+        return this.http.put<ApiResponse>(`${this.baseUrl}/job-application/resume/${id}`, formData, { headers })
+            .pipe(
+                tap(response => {
+                    if (response.status_code == 200) {
+                        console.log('Resume Updated successfully:', response.data);
                     }
                 }),
                 catchError(this.handleError)

@@ -17,19 +17,20 @@ import { ToastService } from '../services/toast.service';
   templateUrl: './resume-analysis-component.html',
   styleUrl: './resume-analysis-component.css'
 })
-export class ResumeAnalysisComponent implements OnInit, OnDestroy  {
+export class ResumeAnalysisComponent implements OnInit, OnDestroy {
 
   resumeAnalysisResult: ResumeAnalysis;
   atsScore = 0;
   isResumeAnalysisInProgress = false;
   isResumeAnalysisFetching = false;
   animationStep = 0;
-  jobApplicationId: string='';
+  jobApplicationId: string = '';
   isJdModelOpen = false;
   isJdFetching = false;
   job_description: string = '';
   private animationInterval: Subscription | null = null;
   private apiSub: Subscription | null = null;
+  uploadedFile: File;
 
   constructor(
     private route: ActivatedRoute,
@@ -48,7 +49,7 @@ export class ResumeAnalysisComponent implements OnInit, OnDestroy  {
     });
   }
 
-  
+
   startStepper() {
     this.animationStep = 0;
     this.animationInterval = interval(6000).subscribe(() => {
@@ -106,8 +107,8 @@ export class ResumeAnalysisComponent implements OnInit, OnDestroy  {
         },
         error: (error) => {
           console.error('Error loading applications:', error);
-          if(error.status === 404) {
-            console.log('No analysis found for this job application, starting analysis...',error);
+          if (error.status === 404) {
+            console.log('No analysis found for this job application, starting analysis...', error);
             this.analyzeResume(jobApplicationId);
             this.isResumeAnalysisFetching = false;
             this.cdr.markForCheck();
@@ -156,6 +157,54 @@ export class ResumeAnalysisComponent implements OnInit, OnDestroy  {
       error: () => {
         this.isJdFetching = false;
         this.toastService.showError('Failed to load application', 2000);
+      }
+    });
+  }
+
+  onFileSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
+    console.log("Selected File:");
+    console.log(file?.name);
+    this.handleFileSelection(file);
+  }
+
+  private handleFileSelection(file: File | undefined): void {
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!allowedTypes.includes(file.type)) {
+      return;
+    }
+
+    // Validate file size (10MB)
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      return;
+    }
+
+    this.uploadedFile = file;
+    this.updateResume(file);
+    // this.clearMessages();
+  }
+
+  updateResume(file: File) {
+    this.isResumeAnalysisInProgress = true;
+    this.jobApplicationService.updateJobApplicationResume(this.jobApplicationId, file).subscribe({
+      next: (response) => {
+        if (response.status_code === 200) {
+          this.analyzeResume(this.jobApplicationId);
+          // this.isResumeAnalysisInProgress = false;
+          this.cdr.markForCheck();
+        } else {
+          console.error('Error saving application:', response.message);
+          this.isResumeAnalysisInProgress = false;
+        }
+      },
+      error: (error) => {
+        console.error('Error saving application:', error);
+        alert('Failed to save application. Please try again later.');
       }
     });
   }
