@@ -7,6 +7,9 @@ import { ResumeService } from '../services/resume.service';
 import { ApiResponse } from '../models/api.response';
 import { interval, Subscription } from 'rxjs';
 import { ResumeAnalysisDto } from '../models/dto/resume-analysis.dto';
+import { JobApplicationService } from '../services/job-application.service';
+import { JobApplicationDto } from '../models/dto/job-application.dto';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-resume-analysis-component',
@@ -21,20 +24,26 @@ export class ResumeAnalysisComponent implements OnInit, OnDestroy  {
   isResumeAnalysisInProgress = false;
   isResumeAnalysisFetching = false;
   animationStep = 0;
+  jobApplicationId: string='';
+  isJdModelOpen = false;
+  isJdFetching = false;
+  job_description: string = '';
   private animationInterval: Subscription | null = null;
   private apiSub: Subscription | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private resumeService: ResumeService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private jobApplicationService: JobApplicationService,
+    private toastService: ToastService
   ) { }
   ngOnInit() {
     // Fetch analysis data from service here (omitted, mock data above)
     this.route.paramMap.subscribe(params => {
-      const jobApplicationId = params.get('jobApplicationId');
-      if (jobApplicationId) {
-        this.loadResumeAnalysis(jobApplicationId);
+      this.jobApplicationId = params.get('jobApplicationId') as string;
+      if (this.jobApplicationId) {
+        this.loadResumeAnalysis(this.jobApplicationId);
       }
     });
   }
@@ -62,7 +71,7 @@ export class ResumeAnalysisComponent implements OnInit, OnDestroy  {
     this.cdr.markForCheck();
   }
 
-  private analyzeResume(jobApplicationId: string) {
+  public analyzeResume(jobApplicationId: string) {
     this.isResumeAnalysisInProgress = true;
     this.startStepper();
     this.resumeService.analyzeResume(jobApplicationId)
@@ -121,5 +130,33 @@ export class ResumeAnalysisComponent implements OnInit, OnDestroy  {
   editResume() {
     // Navigate to resume edit page
     alert('Navigate to edit page!');
+  }
+
+  viewJobDescription() {
+    this.isJdModelOpen = true;
+    this.loadApplication();
+    this.cdr.markForCheck();
+  }
+
+  closeJdModal() {
+    this.isJdModelOpen = false;
+  }
+
+  loadApplication(): void {
+    this.isJdFetching = true;
+    this.jobApplicationService.getJobApplicationById(this.jobApplicationId).subscribe({
+      next: (response) => {
+        if (response.status_code === 200) {
+          const jobApplication = response.data[0] as JobApplicationDto;
+          this.job_description = jobApplication.job_description || '';
+        }
+        this.isJdFetching = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.isJdFetching = false;
+        this.toastService.showError('Failed to load application', 2000);
+      }
+    });
   }
 }
